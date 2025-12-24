@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { MIRIFER_DAYS } from '../../data/days';
+import { supabase } from '../../lib/supabase';
 import './Journey.css';
 
 const Journey = () => {
@@ -8,8 +6,25 @@ const Journey = () => {
     const [journeyState, setJourneyState] = useState({});
 
     useEffect(() => {
-        const savedJourney = JSON.parse(localStorage.getItem('mirifer_journey') || '{}');
-        setJourneyState(savedJourney);
+        const loadJourneyState = async () => {
+            const { data, error } = await supabase
+                .from('system_state')
+                .select('value')
+                .eq('key', 'mirifer_journey')
+                .single();
+
+            if (data && data.value) {
+                setJourneyState(data.value);
+                // Also update local for immediate speed on next load
+                localStorage.setItem('mirifer_journey', JSON.stringify(data.value));
+            } else {
+                // Fallback to local
+                const savedJourney = JSON.parse(localStorage.getItem('mirifer_journey') || '{}');
+                setJourneyState(savedJourney);
+            }
+        };
+
+        loadJourneyState();
     }, []);
 
     const getStatus = (dayId) => {

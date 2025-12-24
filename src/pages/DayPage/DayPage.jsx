@@ -4,6 +4,7 @@ import { MIRIFER_DAYS, PATTERN_OPTIONS } from '../../data/days';
 import Callout from '../../components/Callout/Callout';
 import Divider from '../../components/Divider/Divider';
 import NotionButton from '../../components/NotionButton/NotionButton';
+import { supabase } from '../../lib/supabase';
 import './DayPage.css';
 
 const DayPage = () => {
@@ -20,40 +21,80 @@ const DayPage = () => {
     const [error, setError] = useState('');
     const [generationCount, setGenerationCount] = useState(0);
 
-    // Load from localStorage
+    // Load from Supabase
     useEffect(() => {
-        const savedData = localStorage.getItem(`mirifer_day_${dayId}`);
-        if (savedData) {
-            const parsed = JSON.parse(savedData);
-            setReflection(parsed.reflection || '');
-            setPatterns(parsed.patterns || []);
-            setIsCompleted(parsed.isCompleted || false);
-            setLlmResponse(parsed.llmResponse || '');
-            setGenerationCount(parsed.generationCount || 0);
-        }
+        const loadSupabaseData = async () => {
+            const { data, error: supabaseError } = await supabase
+                .from('reflections')
+                .select('content')
+                .eq('day', dayId)
+                .single();
+
+            if (data && data.content) {
+                const parsed = data.content;
+                // Only load content if it was already "saved" (completed or had a response)
+                if (parsed.isCompleted || parsed.llmResponse) {
+                    setReflection(parsed.reflection || '');
+                    setPatterns(parsed.patterns || []);
+                    setIsCompleted(parsed.isCompleted || false);
+                    setLlmResponse(parsed.llmResponse || '');
+                    setGenerationCount(parsed.generationCount || 0);
+                }
+            } else {
+                // Reset states if no saved data (prevents state leakage between days)
+                setReflection('');
+                setPatterns([]);
+                setIsCompleted(false);
+                setLlmResponse('');
+                setGenerationCount(0);
+            }
+        };
+
+        loadSupabaseData();
     }, [dayId]);
 
-    // Save to localStorage
-    const saveData = (newReflection, newPatterns, completedStatus = isCompleted, newLlmResponse = llmResponse, newGenCount = generationCount) => {
-        const dataToSave = {
+    // Save to Supabase
+    const saveData = async (newReflection, newPatterns, completedStatus = isCompleted, newLlmResponse = llmResponse, newGenCount = generationCount) => {
+        const content = {
             reflection: newReflection,
             patterns: newPatterns,
             isCompleted: completedStatus,
             llmResponse: newLlmResponse,
             generationCount: newGenCount
         };
-        localStorage.setItem(`mirifer_day_${dayId}`, JSON.stringify(dataToSave));
 
-        // Update global journey status
+        const { error: upsertError } = await supabase
+            .from('reflections')
+            .upsert({
+                day: dayId,
+                content,
+                updated_at: new Date().toISOString()
+            });
+
+        if (upsertError) {
+            console.error('Supabase save error:', upsertError);
+            setError('Cloud sync failed. Data saved locally only.');
+            // Fallback to localStorage
+            localStorage.setItem(`mirifer_day_${dayId}`, JSON.stringify(content));
+        }
+
+        // Update system state status pill (optional but helpful for Journey overview)
         const journeyState = JSON.parse(localStorage.getItem('mirifer_journey') || '{}');
         journeyState[dayId] = completedStatus ? 'Complete' : 'In progress';
         localStorage.setItem('mirifer_journey', JSON.stringify(journeyState));
+
+        await supabase
+            .from('system_state')
+            .upsert({
+                key: 'mirifer_journey',
+                value: journeyState
+            });
     };
 
     const handleReflectionChange = (e) => {
         if (isCompleted) return;
         setReflection(e.target.value);
-        saveData(e.target.value, patterns);
+        // Removed saveData call to prevent persistence on refresh for incomplete days
     };
 
     const togglePattern = (pattern) => {
@@ -62,7 +103,7 @@ const DayPage = () => {
             ? patterns.filter(p => p !== pattern)
             : [...patterns, pattern];
         setPatterns(newPatterns);
-        saveData(reflection, newPatterns);
+        // Removed saveData call
     };
 
     const getMiriferReflection = async () => {

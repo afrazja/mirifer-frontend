@@ -1,14 +1,25 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import Callout from '../../components/Callout/Callout';
-import Toggle from '../../components/Toggle/Toggle';
-import NotionButton from '../../components/NotionButton/NotionButton';
-import Divider from '../../components/Divider/Divider';
-import Journey from '../../components/Journey/Journey';
+import { supabase } from '../../lib/supabase';
 import './Home.css';
 
 const Home = () => {
     const navigate = useNavigate();
+
+    const handleReset = async () => {
+        if (window.confirm("ARE YOU SURE? This will permanently delete all your progress and reflections for all 14 days. This cannot be undone.")) {
+            // Clear local
+            localStorage.clear();
+
+            // Clear cloud
+            const { error: error1 } = await supabase.from('reflections').delete().neq('day', 0);
+            const { error: error2 } = await supabase.from('system_state').delete().neq('key', '');
+
+            if (error1 || error2) {
+                alert("Reset failed on some cloud records. Please check your Supabase console.");
+            }
+
+            window.location.reload();
+        }
+    };
 
     return (
         <div className="container home-page">
@@ -47,7 +58,7 @@ const Home = () => {
 
             <Divider />
 
-            <section className="extra-links notion-block" style={{ display: 'flex', gap: '12px' }}>
+            <section className="extra-links notion-block" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                 <NotionButton
                     type="secondary"
                     onClick={() => navigate('/patterns')}
@@ -59,6 +70,13 @@ const Home = () => {
                     onClick={() => navigate('/direction')}
                 >
                     Your Direction
+                </NotionButton>
+                <NotionButton
+                    type="secondary"
+                    onClick={handleReset}
+                    style={{ color: 'var(--error-color)', borderColor: 'var(--error-color)' }}
+                >
+                    Reset System
                 </NotionButton>
             </section>
         </div>

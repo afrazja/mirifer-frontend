@@ -1,7 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import Callout from '../../components/Callout/Callout';
-import Divider from '../../components/Divider/Divider';
+import { supabase } from '../../lib/supabase';
 import './FinalDirection.css';
 
 const FinalDirection = () => {
@@ -13,14 +10,35 @@ const FinalDirection = () => {
     });
 
     useEffect(() => {
-        const saved = localStorage.getItem('mirifer_direction');
-        if (saved) setDirection(JSON.parse(saved));
+        const loadDirection = async () => {
+            const { data, error } = await supabase
+                .from('system_state')
+                .select('value')
+                .eq('key', 'mirifer_direction')
+                .single();
+
+            if (data && data.value) {
+                setDirection(data.value);
+                localStorage.setItem('mirifer_direction', JSON.stringify(data.value));
+            } else {
+                const saved = localStorage.getItem('mirifer_direction');
+                if (saved) setDirection(JSON.parse(saved));
+            }
+        };
+
+        loadDirection();
     }, []);
 
-    const handleChange = (field, value) => {
+    const handleChange = async (field, value) => {
         const newVal = { ...direction, [field]: value };
         setDirection(newVal);
         localStorage.setItem('mirifer_direction', JSON.stringify(newVal));
+        await supabase
+            .from('system_state')
+            .upsert({
+                key: 'mirifer_direction',
+                value: newVal
+            });
     };
 
     return (

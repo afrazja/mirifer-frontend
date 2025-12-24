@@ -1,31 +1,71 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import Divider from '../../components/Divider/Divider';
+import { supabase } from '../../lib/supabase';
 import './PatternOverview.css';
 
 const PatternOverview = () => {
     const [totalPatterns, setTotalPatterns] = useState({});
     const [reflections, setReflections] = useState([]);
+    const [manualState, setManualState] = useState({
+        tensions: '',
+        drains: '',
+        energizes: ''
+    });
 
     useEffect(() => {
-        const patternsCount = {};
-        const texts = [];
+        const loadSupabaseData = async () => {
+            // Load all reflections to aggregate patterns
+            const { data: reflectionsData } = await supabase
+                .from('reflections')
+                .select('day, content');
 
-        for (let i = 1; i <= 14; i++) {
-            const dayData = JSON.parse(localStorage.getItem(`mirifer_day_${i}`) || '{}');
-            if (dayData.patterns) {
-                dayData.patterns.forEach(p => {
-                    patternsCount[p] = (patternsCount[p] || 0) + 1;
+            const patternsCount = {};
+            const texts = [];
+
+            if (reflectionsData) {
+                reflectionsData.forEach(item => {
+                    const dayData = item.content || {};
+                    if (dayData.patterns) {
+                        dayData.patterns.forEach(p => {
+                            patternsCount[p] = (patternsCount[p] || 0) + 1;
+                        });
+                    }
+                    if (dayData.reflection) {
+                        texts.push({ day: item.day, text: dayData.reflection });
+                    }
                 });
             }
-            if (dayData.reflection) {
-                texts.push({ day: i, text: dayData.reflection });
-            }
-        }
 
-        setTotalPatterns(patternsCount);
-        setReflections(texts);
+            setTotalPatterns(patternsCount);
+            setReflections(texts);
+
+            // Load manual synthesis from system_state
+            const { data: stateData } = await supabase
+                .from('system_state')
+                .select('key, value')
+                .in('key', ['mirifer_tensions', 'mirifer_drains', 'mirifer_energizes']);
+
+            if (stateData) {
+                const newState = { ...manualState };
+                stateData.forEach(item => {
+                    const field = item.key.replace('mirifer_', '');
+                    newState[field] = item.value || '';
+                });
+                setManualState(newState);
+            }
+        };
+
+        loadSupabaseData();
     }, []);
+
+    const handleManualChange = async (key, value) => {
+        setManualState(prev => ({ ...prev, [key]: value }));
+        localStorage.setItem(`mirifer_${key}`, value);
+        await supabase
+            .from('system_state')
+            .upsert({
+                key: `mirifer_${key}`,
+                value: value
+            });
+    };
 
     return (
         <div className="container pattern-overview">
@@ -61,8 +101,8 @@ const PatternOverview = () => {
                     <textarea
                         className="manual-synthesis"
                         placeholder="Write your observations about repeating themes here..."
-                        defaultValue={localStorage.getItem('mirifer_tensions') || ''}
-                        onChange={(e) => localStorage.setItem('mirifer_tensions', e.target.value)}
+                        value={manualState.tensions}
+                        onChange={(e) => handleManualChange('tensions', e.target.value)}
                     />
                 </div>
             </section>
@@ -75,8 +115,8 @@ const PatternOverview = () => {
                         <textarea
                             className="comparison-input"
                             placeholder="e.g., Overthinking..."
-                            defaultValue={localStorage.getItem('mirifer_drains') || ''}
-                            onChange={(e) => localStorage.setItem('mirifer_drains', e.target.value)}
+                            value={manualState.drains}
+                            onChange={(e) => handleManualChange('drains', e.target.value)}
                         />
                     </div>
                     <div className="comparison-col">
@@ -84,8 +124,8 @@ const PatternOverview = () => {
                         <textarea
                             className="comparison-input"
                             placeholder="e.g., Taking action..."
-                            defaultValue={localStorage.getItem('mirifer_energizes') || ''}
-                            onChange={(e) => localStorage.setItem('mirifer_energizes', e.target.value)}
+                            value={manualState.energizes}
+                            onChange={(e) => handleManualChange('energizes', e.target.value)}
                         />
                     </div>
                 </div>
