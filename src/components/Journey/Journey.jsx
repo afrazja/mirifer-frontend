@@ -1,23 +1,38 @@
-import { supabase } from '../../lib/supabase';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { MIRIFER_DAYS } from '../../data/days';
+import { useAuth } from '../../context/AuthContext';
 import './Journey.css';
 
 const Journey = () => {
     const navigate = useNavigate();
+    const { session } = useAuth();
     const [journeyState, setJourneyState] = useState({});
 
     useEffect(() => {
         const loadJourneyState = async () => {
-            const { data, error } = await supabase
-                .from('system_state')
-                .select('value')
-                .eq('key', 'mirifer_journey')
-                .single();
+            if (!session?.access_token) return;
 
-            if (data && data.value) {
-                setJourneyState(data.value);
-                // Also update local for immediate speed on next load
-                localStorage.setItem('mirifer_journey', JSON.stringify(data.value));
-            } else {
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
+            try {
+                const response = await fetch(`${apiUrl}/api/mirifer/entries`, {
+                    headers: {
+                        'Authorization': `Bearer ${session.access_token}`
+                    }
+                });
+                const data = await response.json();
+
+                if (data.entries) {
+                    // Build journey state from entries
+                    const state = {};
+                    data.entries.forEach(entry => {
+                        state[entry.day] = entry.ai_text ? 'Complete' : 'In progress';
+                    });
+                    setJourneyState(state);
+                }
+            } catch (err) {
+                console.error('Failed to load journey state:', err);
                 // Fallback to local
                 const savedJourney = JSON.parse(localStorage.getItem('mirifer_journey') || '{}');
                 setJourneyState(savedJourney);
@@ -25,7 +40,7 @@ const Journey = () => {
         };
 
         loadJourneyState();
-    }, []);
+    }, [session?.access_token]);
 
     const getStatus = (dayId) => {
         return journeyState[dayId] || 'Not started';

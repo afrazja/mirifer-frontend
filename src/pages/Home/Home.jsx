@@ -1,17 +1,31 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import Callout from '../../components/Callout/Callout';
+import Toggle from '../../components/Toggle/Toggle';
+import NotionButton from '../../components/NotionButton/NotionButton';
+import Divider from '../../components/Divider/Divider';
+import Journey from '../../components/Journey/Journey';
+import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
 import './Home.css';
 
 const Home = () => {
     const navigate = useNavigate();
+    const { signOut, user } = useAuth();
+
+    const handleSignOut = async () => {
+        await signOut();
+        navigate('/login');
+    };
 
     const handleReset = async () => {
         if (window.confirm("ARE YOU SURE? This will permanently delete all your progress and reflections for all 14 days. This cannot be undone.")) {
             // Clear local
             localStorage.clear();
 
-            // Clear cloud
-            const { error: error1 } = await supabase.from('reflections').delete().neq('day', 0);
-            const { error: error2 } = await supabase.from('system_state').delete().neq('key', '');
+            // Clear cloud (entries table now)
+            const { error: error1 } = await supabase.from('entries').delete().neq('day', 0);
+            const { error: error2 } = await supabase.from('user_state').delete().neq('key', '');
 
             if (error1 || error2) {
                 alert("Reset failed on some cloud records. Please check your Supabase console.");
@@ -77,6 +91,12 @@ const Home = () => {
                     style={{ color: 'var(--error-color)', borderColor: 'var(--error-color)' }}
                 >
                     Reset System
+                </NotionButton>
+                <NotionButton
+                    type="secondary"
+                    onClick={handleSignOut}
+                >
+                    Sign Out
                 </NotionButton>
             </section>
         </div>

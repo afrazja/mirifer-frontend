@@ -5,11 +5,13 @@ import Callout from '../../components/Callout/Callout';
 import Divider from '../../components/Divider/Divider';
 import NotionButton from '../../components/NotionButton/NotionButton';
 import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../context/AuthContext';
 import './DayPage.css';
 
 const DayPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { session } = useAuth();
     const dayId = parseInt(id);
     const dayData = MIRIFER_DAYS.find(d => d.day === dayId);
 
@@ -21,37 +23,43 @@ const DayPage = () => {
     const [error, setError] = useState('');
     const [generationCount, setGenerationCount] = useState(0);
 
-    // Load from Supabase
+    // Load from backend (which checks user_id via auth token)
     useEffect(() => {
-        const loadSupabaseData = async () => {
-            const { data, error: supabaseError } = await supabase
-                .from('reflections')
-                .select('content')
-                .eq('day', dayId)
-                .single();
+        const loadEntries = async () => {
+            if (!session?.access_token) return;
 
-            if (data && data.content) {
-                const parsed = data.content;
-                // Only load content if it was already "saved" (completed or had a response)
-                if (parsed.isCompleted || parsed.llmResponse) {
-                    setReflection(parsed.reflection || '');
-                    setPatterns(parsed.patterns || []);
-                    setIsCompleted(parsed.isCompleted || false);
-                    setLlmResponse(parsed.llmResponse || '');
-                    setGenerationCount(parsed.generationCount || 0);
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
+            try {
+                const response = await fetch(`${apiUrl}/api/mirifer/entries`, {
+                    headers: {
+                        'Authorization': `Bearer ${session.access_token}`
+                    }
+                });
+                const data = await response.json();
+
+                if (data.entries) {
+                    const entry = data.entries.find(e => e.day === dayId);
+                    if (entry && entry.ai_text) {
+                        setReflection(entry.user_text || '');
+                        setLlmResponse(entry.ai_text || '');
+                        setIsCompleted(true); // If there's an ai_text, it's completed
+                    } else {
+                        // Reset for new day
+                        setReflection('');
+                        setPatterns([]);
+                        setIsCompleted(false);
+                        setLlmResponse('');
+                        setGenerationCount(0);
+                    }
                 }
-            } else {
-                // Reset states if no saved data (prevents state leakage between days)
-                setReflection('');
-                setPatterns([]);
-                setIsCompleted(false);
-                setLlmResponse('');
-                setGenerationCount(0);
+            } catch (err) {
+                console.error('Failed to load entries:', err);
             }
         };
 
-        loadSupabaseData();
-    }, [dayId]);
+        loadEntries();
+    }, [dayId, session?.access_token]);
 
     // Save to Supabase
     const saveData = async (newReflection, newPatterns, completedStatus = isCompleted, newLlmResponse = llmResponse, newGenCount = generationCount) => {
@@ -120,10 +128,15 @@ const DayPage = () => {
         try {
             const response = await fetch(`${apiUrl}/api/mirifer/respond`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session?.access_token}`
+                },
                 body: JSON.stringify({
                     day: dayId,
                     userText: reflection,
+                    title: dayData?.title || `Day ${dayId}`,
+                    question: dayData?.question || '',
                     mode: dayId === 14 ? 'synthesis' : 'mirror'
                 })
             });
@@ -136,10 +149,11 @@ const DayPage = () => {
                 setLlmResponse(data.text);
                 const newCount = generationCount + 1;
                 setGenerationCount(newCount);
+                // Backend now saves directly, but we still call saveData for local state sync
                 saveData(reflection, patterns, isCompleted, data.text, newCount);
             }
         } catch (err) {
-            setError('Could not connect to the Mirifer server. Ensure it is running on port 3001.');
+            setError('Could not connect to the Mirifer server.');
         } finally {
             setIsLoading(false);
         }
