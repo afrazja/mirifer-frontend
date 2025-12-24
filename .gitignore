@@ -25,3 +25,7 @@ dist-ssr
 
 # Backend
 /server
+
+# Environment 
+.env
+*.env.local
