@@ -1,0 +1,72 @@
+.journey-database {
+    margin: 2rem 0;
+}
+
+.database-table {
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.table-header {
+    display: grid;
+    grid-template-columns: 80px 1fr 150px;
+    padding: 8px 12px;
+    background-color: #f7f6f3;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--secondary-text);
+    text-transform: uppercase;
+}
+
+.table-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 150px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background 0.2s;
+    align-items: center;
+}
+
+.table-row:last-child {
+    border-bottom: none;
+}
+
+.table-row:hover {
+    background-color: var(--bg-hover);
+}
+
+.col-day {
+    font-weight: 500;
+}
+
+.col-title {
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.status-pill {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.not-started {
+    background-color: #f1f1ef;
+    color: var(--secondary-text);
+}
+
+.in-progress {
+    background-color: #ebf5fe;
+    color: var(--accent-color);
+}
+
+.complete {
+    background-color: #f1fcf1;
+    color: var(--success-color);
+}

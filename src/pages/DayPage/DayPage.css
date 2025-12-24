@@ -1,0 +1,140 @@
+.day-page {
+    animation: fadeIn 0.4s ease-out;
+}
+
+.breadcrumb {
+    margin-bottom: 2rem;
+    color: var(--secondary-text);
+    font-size: 0.9rem;
+}
+
+.breadcrumb a {
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.day-title {
+    margin-top: 0;
+}
+
+.reflection-input {
+    width: 100%;
+    min-height: 200px;
+    padding: 12px;
+    font-family: inherit;
+    font-size: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.reflection-input:focus {
+    border-color: var(--accent-color);
+}
+
+.reflection-input[readonly] {
+    background-color: #fafafa;
+    color: var(--secondary-text);
+    cursor: default;
+}
+
+.pattern-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    margin-top: 1rem;
+}
+
+.pattern-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.pattern-item:hover {
+    background-color: var(--bg-hover);
+}
+
+.pattern-item.checked {
+    background-color: var(--callout-bg);
+    border-color: var(--accent-color);
+}
+
+.pattern-item input {
+    display: none;
+}
+
+.checkbox-custom {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--secondary-text);
+    border-radius: 3px;
+    position: relative;
+}
+
+.pattern-item.checked .checkbox-custom {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.pattern-item.checked .checkbox-custom::after {
+    content: "✓";
+    position: absolute;
+    color: white;
+    font-size: 10px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.instruction {
+    font-size: 0.85rem;
+    color: var(--secondary-text);
+    margin-top: 4px;
+}
+
+.mirifer-reflection-section {
+    background-color: #fafafa;
+    border: 1px solid var(--border-color);
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.llm-text {
+    white-space: pre-wrap;
+    line-height: 1.6;
+    font-size: 1rem;
+    color: var(--primary-text);
+}
+
+.regeneration-area {
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+}
+
+.error-message {
+    font-weight: 500;
+}
+
+.completion-message {
+    text-align: center;
+    padding: 2rem;
+    background-color: #f1fcf1;
+    border-radius: 8px;
+    border: 1px solid #d4edda;
+}
+
+.completion-message p:first-child {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--success-color);
+    margin-bottom: 8px;
+}

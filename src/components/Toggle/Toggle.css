@@ -1,0 +1,33 @@
+.notion-toggle {
+    margin: 0.5em 0;
+}
+
+.notion-toggle-header {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background 0.2s;
+    user-select: none;
+}
+
+.notion-toggle-header:hover {
+    background-color: var(--bg-hover);
+}
+
+.notion-toggle-arrow {
+    font-size: 0.7rem;
+    width: 20px;
+    color: var(--secondary-text);
+    margin-right: 4px;
+}
+
+.notion-toggle-title {
+    font-weight: 500;
+}
+
+.notion-toggle-content {
+    padding-left: 32px;
+    margin-top: 4px;
+}

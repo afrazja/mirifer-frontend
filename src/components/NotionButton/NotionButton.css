@@ -1,0 +1,38 @@
+.notion-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.button-primary {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.button-primary:hover {
+    background-color: #1a6ab5;
+}
+
+.button-secondary {
+    background-color: transparent;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.button-secondary:hover {
+    background-color: var(--bg-hover);
+}
+
+.notion-button-icon {
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+}

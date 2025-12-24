@@ -1,0 +1,53 @@
+.final-direction h2 {
+    margin-top: 2rem;
+    font-size: 1.1rem;
+    border-bottom: none;
+    color: var(--secondary-text);
+}
+
+.direction-input {
+    width: 100%;
+    min-height: 80px;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 1rem;
+    resize: vertical;
+    margin-top: 8px;
+}
+
+.direction-input.short {
+    min-height: 60px;
+}
+
+.direction-list {
+    margin-top: 10px;
+}
+
+.direction-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.direction-item .bullet {
+    margin-right: 12px;
+    font-size: 1.2rem;
+    color: var(--secondary-text);
+}
+
+.inline-input {
+    flex: 1;
+    border: none;
+    border-bottom: 1px solid transparent;
+    padding: 4px 0;
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+    transition: border-bottom 0.2s;
+}
+
+.inline-input:focus {
+    border-bottom: 1px solid var(--accent-color);
+}

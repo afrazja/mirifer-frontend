@@ -1,0 +1,29 @@
+.notion-callout {
+    display: flex;
+    padding: 16px;
+    border-radius: 4px;
+    margin: 1em 0;
+    background-color: var(--callout-bg);
+    border: 1px solid transparent;
+}
+
+.notion-callout-icon {
+    margin-right: 12px;
+    font-size: 1.2rem;
+    user-select: none;
+}
+
+.notion-callout-content {
+    flex: 1;
+    font-size: 0.95rem;
+}
+
+.callout-warning {
+    background-color: #fdeaea;
+    border-color: #f8caca;
+}
+
+.callout-info {
+    background-color: #ebf5fe;
+    border-color: #c9e4fc;
+}
