@@ -4,7 +4,7 @@ import { MIRIFER_DAYS, PATTERN_OPTIONS } from '../../data/days';
 import Callout from '../../components/Callout/Callout';
 import Divider from '../../components/Divider/Divider';
 import NotionButton from '../../components/NotionButton/NotionButton';
-import { supabase } from '../../lib/supabase';
+
 import { useAuth } from '../../context/AuthContext';
 import './DayPage.css';
 
@@ -62,7 +62,7 @@ const DayPage = () => {
         loadEntries();
     }, [dayId, getAccessCode]);
 
-    // Save to Supabase
+    // Save to Backend and LocalStorage
     const saveData = async (newReflection, newPatterns, completedStatus = isCompleted, newLlmResponse = llmResponse, newGenCount = generationCount) => {
         const content = {
             reflection: newReflection,
@@ -72,32 +72,36 @@ const DayPage = () => {
             generationCount: newGenCount
         };
 
-        const { error: upsertError } = await supabase
-            .from('reflections')
-            .upsert({
-                day: dayId,
-                content,
-                updated_at: new Date().toISOString()
-            });
+        // 1. Update LocalStorage for immediate persistence/fallback
+        localStorage.setItem(`mirifer_day_${dayId}`, JSON.stringify(content));
 
-        if (upsertError) {
-            console.error('Supabase save error:', upsertError);
-            setError('Cloud sync failed. Data saved locally only.');
-            // Fallback to localStorage
-            localStorage.setItem(`mirifer_day_${dayId}`, JSON.stringify(content));
-        }
-
-        // Update system state status pill (optional but helpful for Journey overview)
         const journeyState = JSON.parse(localStorage.getItem('mirifer_journey') || '{}');
         journeyState[dayId] = completedStatus ? 'Complete' : 'In progress';
         localStorage.setItem('mirifer_journey', JSON.stringify(journeyState));
 
-        await supabase
-            .from('system_state')
-            .upsert({
-                key: 'mirifer_journey',
-                value: journeyState
+        // 2. Update Backend
+        const accessCode = getAccessCode();
+        if (!accessCode) return;
+
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+        try {
+            await fetch(`${apiUrl}/api/mirifer/save`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Access-Code': accessCode
+                },
+                body: JSON.stringify({
+                    day: dayId,
+                    userText: newReflection,
+                    title: dayData?.title || `Day ${dayId}`,
+                    question: dayData?.question || ''
+                })
             });
+        } catch (err) {
+            console.error('Failed to sync with backend:', err);
+            setError('Cloud sync failed. Data saved locally.');
+        }
     };
 
     const handleReflectionChange = (e) => {
