@@ -5,6 +5,7 @@ import Toggle from '../../components/Toggle/Toggle';
 import NotionButton from '../../components/NotionButton/NotionButton';
 import Divider from '../../components/Divider/Divider';
 import Journey from '../../components/Journey/Journey';
+import ReportButton from '../../components/ReportButton/ReportButton';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
 import './Home.css';
@@ -68,6 +69,8 @@ const Home = () => {
             </section>
 
             <Journey />
+
+            <ReportButton />
 
             <Divider />
 
