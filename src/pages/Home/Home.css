@@ -5,9 +5,28 @@
 
 .top-nav {
     display: flex;
-    justify-content: flex-end;
-    margin-bottom: -20px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
     padding-top: 10px;
+}
+
+.user-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: var(--secondary-text);
+    background: var(--bg-color-alt);
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+}
+
+.user-code {
+    font-weight: 600;
+    color: var(--accent-color);
+    letter-spacing: 0.05em;
 }
 
 .sign-out-top {

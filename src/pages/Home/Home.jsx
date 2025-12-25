@@ -23,6 +23,9 @@ const Home = () => {
     return (
         <div className="container home-page">
             <div className="top-nav">
+                <div className="user-badge">
+                    <span className="user-code">{user?.accessCode || user?.displayName}</span>
+                </div>
                 <NotionButton
                     type="secondary"
                     onClick={handleSignOut}

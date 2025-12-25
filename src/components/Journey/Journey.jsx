@@ -25,10 +25,15 @@ const Journey = () => {
                 const data = await response.json();
 
                 if (data.entries) {
+                    console.log('Loaded entries:', data.entries);
                     // Build journey state from entries
                     const state = {};
                     data.entries.forEach(entry => {
-                        state[entry.day] = entry.ai_text ? 'Complete' : 'In progress';
+                        if (entry.is_completed) {
+                            state[entry.day] = 'Complete';
+                        } else if (entry.user_text && entry.user_text.trim().length > 0) {
+                            state[entry.day] = 'In progress';
+                        }
                     });
                     setJourneyState(state);
                 }

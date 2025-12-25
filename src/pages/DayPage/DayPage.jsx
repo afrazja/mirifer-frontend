@@ -41,10 +41,10 @@ const DayPage = () => {
 
                 if (data.entries) {
                     const entry = data.entries.find(e => e.day === dayId);
-                    if (entry && entry.ai_text) {
+                    if (entry) {
                         setReflection(entry.user_text || '');
                         setLlmResponse(entry.ai_text || '');
-                        setIsCompleted(true); // If there's an ai_text, it's completed
+                        setIsCompleted(!!entry.is_completed);
                     } else {
                         // Reset for new day
                         setReflection('');
@@ -94,6 +94,8 @@ const DayPage = () => {
                 body: JSON.stringify({
                     day: dayId,
                     userText: newReflection,
+                    aiText: newLlmResponse,
+                    isCompleted: completedStatus,
                     title: dayData?.title || `Day ${dayId}`,
                     question: dayData?.question || ''
                 })
