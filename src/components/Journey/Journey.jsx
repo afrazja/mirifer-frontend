@@ -96,16 +96,7 @@ const Journey = () => {
 
     return (
         <div className="journey-database">
-            <div className="journey-header-row">
-                <h3 className="notion-block">Mirifer Journey</h3>
-                <button
-                    className="delete-data-btn-mini"
-                    onClick={handleDeleteData}
-                    title="Delete all reflection content"
-                >
-                    Delete My Data
-                </button>
-            </div>
+            <h3 className="notion-block">Mirifer Journey</h3>
             <div className="database-table">
                 <div className="table-header">
                     <div className="col-day">Day</div>
@@ -129,6 +120,15 @@ const Journey = () => {
                         </div>
                     ))}
                 </div>
+            </div>
+            <div className="journey-footer">
+                <button
+                    className="delete-data-btn-bottom"
+                    onClick={handleDeleteData}
+                    title="Delete all reflection content"
+                >
+                    Delete My Data
+                </button>
             </div>
         </div>
     );
