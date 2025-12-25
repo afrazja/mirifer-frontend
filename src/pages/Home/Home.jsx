@@ -18,6 +18,36 @@ const Home = () => {
         navigate('/login');
     };
 
+    const handleDeleteData = async () => {
+        const confirm1 = window.confirm("SECURITY & PRIVACY: Are you absolutely sure you want to permanently delete all your data? This will wipe all your reflections and AI responses from our database. This cannot be undone.");
+        if (!confirm1) return;
+
+        const confirm2 = window.confirm("FINAL WARNING: This will permanently erase your entire journey history. Continue?");
+        if (!confirm2) return;
+
+        try {
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+            const response = await fetch(`${apiUrl}/api/mirifer/data`, {
+                method: 'DELETE',
+                headers: {
+                    'X-Access-Code': user?.accessCode || localStorage.getItem('mirifer_access_code')
+                }
+            });
+
+            if (response.ok) {
+                alert("Your data has been successfully deleted.");
+                localStorage.clear();
+                window.location.reload();
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.error || 'Failed to delete data'}`);
+            }
+        } catch (err) {
+            console.error('Delete error:', err);
+            alert("Could not connect to the server to delete data.");
+        }
+    };
+
 
 
     return (
@@ -81,6 +111,13 @@ const Home = () => {
                     onClick={() => navigate('/direction')}
                 >
                     Your Direction
+                </NotionButton>
+                <NotionButton
+                    type="secondary"
+                    onClick={handleDeleteData}
+                    className="delete-data-btn"
+                >
+                    Delete My Data
                 </NotionButton>
             </section>
         </div>

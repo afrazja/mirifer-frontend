@@ -84,3 +84,17 @@
 .start-actions {
     margin-top: 2rem;
 }
+
+.delete-data-btn {
+    border-color: rgba(220, 38, 38, 0.2) !important;
+    color: var(--secondary-text) !important;
+    transition: all 0.2s !important;
+    opacity: 0.8;
+}
+
+.delete-data-btn:hover {
+    border-color: #dc2626 !important;
+    color: #dc2626 !important;
+    background-color: #fef2f2 !important;
+    opacity: 1;
+}
