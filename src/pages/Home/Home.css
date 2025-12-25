@@ -1,5 +1,18 @@
 .home-page {
     animation: fadeIn 0.5s ease-out;
+    position: relative;
+}
+
+.top-nav {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: -20px;
+    padding-top: 10px;
+}
+
+.sign-out-top {
+    font-size: 0.85rem !important;
+    padding: 6px 12px !important;
 }
 
 .home-header {

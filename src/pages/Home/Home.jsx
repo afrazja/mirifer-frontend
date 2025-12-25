@@ -18,25 +18,19 @@ const Home = () => {
         navigate('/login');
     };
 
-    const handleReset = async () => {
-        if (window.confirm("ARE YOU SURE? This will permanently delete all your progress and reflections for all 14 days. This cannot be undone.")) {
-            // Clear local
-            localStorage.clear();
 
-            // Clear cloud (entries table now)
-            const { error: error1 } = await supabase.from('entries').delete().neq('day', 0);
-            const { error: error2 } = await supabase.from('user_state').delete().neq('key', '');
-
-            if (error1 || error2) {
-                alert("Reset failed on some cloud records. Please check your Supabase console.");
-            }
-
-            window.location.reload();
-        }
-    };
 
     return (
         <div className="container home-page">
+            <div className="top-nav">
+                <NotionButton
+                    type="secondary"
+                    onClick={handleSignOut}
+                    className="sign-out-top"
+                >
+                    Sign Out
+                </NotionButton>
+            </div>
             <header className="home-header notion-block">
                 <img src="/logo.png" alt="Mirifer Logo" className="site-logo" />
                 <h1>Mirifer — Uncertainty Reduction System</h1>
@@ -84,19 +78,6 @@ const Home = () => {
                     onClick={() => navigate('/direction')}
                 >
                     Your Direction
-                </NotionButton>
-                <NotionButton
-                    type="secondary"
-                    onClick={handleReset}
-                    style={{ color: 'var(--error-color)', borderColor: 'var(--error-color)' }}
-                >
-                    Reset System
-                </NotionButton>
-                <NotionButton
-                    type="secondary"
-                    onClick={handleSignOut}
-                >
-                    Sign Out
                 </NotionButton>
             </section>
         </div>
