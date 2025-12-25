@@ -2,12 +2,49 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MIRIFER_DAYS } from '../../data/days';
 import { useAuth } from '../../context/AuthContext';
+import NotionButton from '../NotionButton/NotionButton';
 import './Journey.css';
 
 const Journey = () => {
     const navigate = useNavigate();
-    const { getAccessCode } = useAuth();
+    const { getAccessCode, user } = useAuth();
     const [journeyState, setJourneyState] = useState({});
+
+    const handleDeleteData = async (e) => {
+        e.stopPropagation();
+        const confirm1 = window.confirm("SECURITY & PRIVACY: Are you absolutely sure you want to permanently erase your reflection content? Your progress (completed days) will be kept, but your private thoughts and Mirifer's responses will be permanently removed from our database.");
+        if (!confirm1) return;
+
+        const confirm2 = window.confirm("FINAL WARNING: This cannot be undone. All your text entries will be wiped. Continue?");
+        if (!confirm2) return;
+
+        try {
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+            const response = await fetch(`${apiUrl}/api/mirifer/data`, {
+                method: 'DELETE',
+                headers: {
+                    'X-Access-Code': user?.accessCode || localStorage.getItem('mirifer_access_code')
+                }
+            });
+
+            if (response.ok) {
+                alert("Your reflection content has been successfully erased.");
+                // Remove day-specific data but KEEP auth keys
+                Object.keys(localStorage).forEach(key => {
+                    if (key.startsWith('mirifer_day_')) {
+                        localStorage.removeItem(key);
+                    }
+                });
+                window.location.reload();
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.error || 'Failed to delete data'}`);
+            }
+        } catch (err) {
+            console.error('Delete error:', err);
+            alert("Could not connect to the server to delete data.");
+        }
+    };
 
     useEffect(() => {
         const loadJourneyState = async () => {
@@ -59,7 +96,16 @@ const Journey = () => {
 
     return (
         <div className="journey-database">
-            <h3 className="notion-block">Mirifer Journey</h3>
+            <div className="journey-header-row">
+                <h3 className="notion-block">Mirifer Journey</h3>
+                <button
+                    className="delete-data-btn-mini"
+                    onClick={handleDeleteData}
+                    title="Delete all reflection content"
+                >
+                    Delete My Data
+                </button>
+            </div>
             <div className="database-table">
                 <div className="table-header">
                     <div className="col-day">Day</div>

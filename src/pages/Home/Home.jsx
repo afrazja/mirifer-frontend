@@ -18,40 +18,7 @@ const Home = () => {
         navigate('/login');
     };
 
-    const handleDeleteData = async () => {
-        const confirm1 = window.confirm("SECURITY & PRIVACY: Are you absolutely sure you want to permanently erase your reflection content? Your progress (completed days) will be kept, but your private thoughts and Mirifer's responses will be permanently removed from our database.");
-        if (!confirm1) return;
-
-        const confirm2 = window.confirm("FINAL WARNING: This cannot be undone. All your text entries will be wiped. Continue?");
-        if (!confirm2) return;
-
-        try {
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-            const response = await fetch(`${apiUrl}/api/mirifer/data`, {
-                method: 'DELETE',
-                headers: {
-                    'X-Access-Code': user?.accessCode || localStorage.getItem('mirifer_access_code')
-                }
-            });
-
-            if (response.ok) {
-                alert("Your reflection content has been successfully erased.");
-                // Remove day-specific data but KEEP auth keys
-                Object.keys(localStorage).forEach(key => {
-                    if (key.startsWith('mirifer_day_')) {
-                        localStorage.removeItem(key);
-                    }
-                });
-                window.location.reload();
-            } else {
-                const errorData = await response.json();
-                alert(`Error: ${errorData.error || 'Failed to delete data'}`);
-            }
-        } catch (err) {
-            console.error('Delete error:', err);
-            alert("Could not connect to the server to delete data.");
-        }
-    };
+    // Logic moved to Journey.jsx for better positioning near the table
 
 
 
@@ -107,22 +74,9 @@ const Home = () => {
             <section className="extra-links notion-block" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                 <NotionButton
                     type="secondary"
-                    onClick={() => navigate('/patterns')}
-                >
-                    Pattern Overview
-                </NotionButton>
-                <NotionButton
-                    type="secondary"
                     onClick={() => navigate('/direction')}
                 >
                     Your Direction
-                </NotionButton>
-                <NotionButton
-                    type="secondary"
-                    onClick={handleDeleteData}
-                    className="delete-data-btn"
-                >
-                    Delete My Data
                 </NotionButton>
             </section>
         </div>

@@ -2,6 +2,35 @@
     margin: 2rem 0;
 }
 
+.journey-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.journey-header-row h3 {
+    margin-bottom: 0;
+}
+
+.delete-data-btn-mini {
+    background: none;
+    border: 1px solid rgba(220, 38, 38, 0.3);
+    color: #dc2626;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.delete-data-btn-mini:hover {
+    background-color: #dc2626;
+    color: white;
+    border-color: #dc2626;
+}
+
 .database-table {
     border: 1px solid var(--border-color);
     border-radius: 4px;
