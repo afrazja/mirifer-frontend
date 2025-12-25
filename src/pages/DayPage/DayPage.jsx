@@ -230,10 +230,20 @@ const DayPage = () => {
 
             <section className="mirifer-reflection-section notion-block">
                 <h3>Mirifer's Reflection</h3>
-                {llmResponse ? (
+                {isCompleted ? (
+                    <div className="reflection-output">
+                        {llmResponse ? (
+                            <div className="llm-text">{llmResponse}</div>
+                        ) : (
+                            <div className="reflection-placeholder" style={{ textAlign: 'center', opacity: 0.6 }}>
+                                <p><em>This reflection content was wiped for privacy.</em></p>
+                            </div>
+                        )}
+                    </div>
+                ) : llmResponse ? (
                     <div className="reflection-output">
                         <div className="llm-text">{llmResponse}</div>
-                        {!isCompleted && generationCount < 2 && (
+                        {generationCount < 2 && (
                             <div className="regeneration-area" style={{ marginTop: '16px' }}>
                                 <NotionButton
                                     type="secondary"

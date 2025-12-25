@@ -19,10 +19,10 @@ const Home = () => {
     };
 
     const handleDeleteData = async () => {
-        const confirm1 = window.confirm("SECURITY & PRIVACY: Are you absolutely sure you want to permanently delete all your data? This will wipe all your reflections and AI responses from our database. This cannot be undone.");
+        const confirm1 = window.confirm("SECURITY & PRIVACY: Are you absolutely sure you want to permanently erase your reflection content? Your progress (completed days) will be kept, but your private thoughts and Mirifer's responses will be permanently removed from our database.");
         if (!confirm1) return;
 
-        const confirm2 = window.confirm("FINAL WARNING: This will permanently erase your entire journey history. Continue?");
+        const confirm2 = window.confirm("FINAL WARNING: This cannot be undone. All your text entries will be wiped. Continue?");
         if (!confirm2) return;
 
         try {
