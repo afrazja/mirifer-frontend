@@ -167,18 +167,25 @@ const DayPage = () => {
     };
 
     const closeDay = () => {
-        if (window.confirm("Are you sure? Once closed, you cannot edit this entry. Today is complete.")) {
-            setIsCompleted(true);
-            saveData(reflection, patterns, true);
-        }
+        setIsCompleted(true);
+        saveData(reflection, patterns, true);
     };
 
     if (!dayData) return <div className="container">Day not found.</div>;
 
     return (
         <div className="container day-page">
-            <nav className="breadcrumb">
-                <Link to="/">Mirifer</Link> / Day {dayId}
+            <nav className="breadcrumb-nav">
+                <nav className="breadcrumb">
+                    <Link to="/">Mirifer</Link> / Day {dayId}
+                </nav>
+                <NotionButton
+                    type="secondary"
+                    onClick={() => navigate('/')}
+                    className="back-button"
+                >
+                    Back
+                </NotionButton>
             </nav>
 
             <header className="day-header notion-block">

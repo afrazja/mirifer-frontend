@@ -2,10 +2,22 @@
     animation: fadeIn 0.4s ease-out;
 }
 
-.breadcrumb {
+.breadcrumb-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 2rem;
+}
+
+.breadcrumb {
+    margin-bottom: 0;
     color: var(--secondary-text);
     font-size: 0.9rem;
+}
+
+.back-button {
+    font-size: 0.85rem !important;
+    padding: 6px 12px !important;
 }
 
 .breadcrumb a {
