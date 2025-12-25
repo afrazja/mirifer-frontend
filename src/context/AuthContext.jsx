@@ -1,38 +1,65 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext({});
 
+// Get API base URL from environment or default to localhost
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [session, setSession] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Get initial session
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setSession(session);
-            setUser(session?.user ?? null);
-            setLoading(false);
-        });
+        // Check for saved access code on mount
+        const savedCode = localStorage.getItem('mirifer_access_code');
+        const savedUser = localStorage.getItem('mirifer_user');
 
-        // Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setSession(session);
-            setUser(session?.user ?? null);
-        });
-
-        return () => subscription.unsubscribe();
+        if (savedCode && savedUser) {
+            setUser(JSON.parse(savedUser));
+        }
+        setLoading(false);
     }, []);
 
-    const signOut = async () => {
-        await supabase.auth.signOut();
+    const login = async (accessCode) => {
+        try {
+            const response = await fetch(`${API_BASE}/api/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ accessCode }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Invalid access code');
+            }
+
+            // Store credentials
+            localStorage.setItem('mirifer_access_code', accessCode);
+            localStorage.setItem('mirifer_user', JSON.stringify(data.user));
+
+            setUser(data.user);
+            return { success: true };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    };
+
+    const signOut = () => {
+        localStorage.removeItem('mirifer_access_code');
+        localStorage.removeItem('mirifer_user');
         setUser(null);
-        setSession(null);
+    };
+
+    // Get access code for API calls
+    const getAccessCode = () => {
+        return localStorage.getItem('mirifer_access_code');
     };
 
     return (
-        <AuthContext.Provider value={{ user, session, loading, signOut }}>
+        <AuthContext.Provider value={{ user, loading, login, signOut, getAccessCode }}>
             {children}
         </AuthContext.Provider>
     );

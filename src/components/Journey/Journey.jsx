@@ -6,19 +6,20 @@ import './Journey.css';
 
 const Journey = () => {
     const navigate = useNavigate();
-    const { session } = useAuth();
+    const { getAccessCode } = useAuth();
     const [journeyState, setJourneyState] = useState({});
 
     useEffect(() => {
         const loadJourneyState = async () => {
-            if (!session?.access_token) return;
+            const accessCode = getAccessCode();
+            if (!accessCode) return;
 
             const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
             try {
                 const response = await fetch(`${apiUrl}/api/mirifer/entries`, {
                     headers: {
-                        'Authorization': `Bearer ${session.access_token}`
+                        'X-Access-Code': accessCode
                     }
                 });
                 const data = await response.json();
@@ -40,7 +41,7 @@ const Journey = () => {
         };
 
         loadJourneyState();
-    }, [session?.access_token]);
+    }, [getAccessCode]);
 
     const getStatus = (dayId) => {
         return journeyState[dayId] || 'Not started';

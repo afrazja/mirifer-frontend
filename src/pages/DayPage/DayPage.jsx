@@ -11,7 +11,7 @@ import './DayPage.css';
 const DayPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { session } = useAuth();
+    const { getAccessCode } = useAuth();
     const dayId = parseInt(id);
     const dayData = MIRIFER_DAYS.find(d => d.day === dayId);
 
@@ -26,14 +26,15 @@ const DayPage = () => {
     // Load from backend (which checks user_id via auth token)
     useEffect(() => {
         const loadEntries = async () => {
-            if (!session?.access_token) return;
+            const accessCode = getAccessCode();
+            if (!accessCode) return;
 
             const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
             try {
                 const response = await fetch(`${apiUrl}/api/mirifer/entries`, {
                     headers: {
-                        'Authorization': `Bearer ${session.access_token}`
+                        'X-Access-Code': accessCode
                     }
                 });
                 const data = await response.json();
@@ -59,7 +60,7 @@ const DayPage = () => {
         };
 
         loadEntries();
-    }, [dayId, session?.access_token]);
+    }, [dayId, getAccessCode]);
 
     // Save to Supabase
     const saveData = async (newReflection, newPatterns, completedStatus = isCompleted, newLlmResponse = llmResponse, newGenCount = generationCount) => {
@@ -130,7 +131,7 @@ const DayPage = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session?.access_token}`
+                    'X-Access-Code': getAccessCode()
                 },
                 body: JSON.stringify({
                     day: dayId,

@@ -70,3 +70,11 @@
     color: var(--error-color);
     margin-top: 1rem;
 }
+
+.trial-notice {
+    color: var(--secondary-text);
+    font-size: 0.85rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}

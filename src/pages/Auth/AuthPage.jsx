@@ -1,30 +1,34 @@
 import React, { useState } from 'react';
-import { supabase } from '../../lib/supabase';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import './AuthPage.css';
 
 const AuthPage = () => {
-    const [email, setEmail] = useState('');
+    const [accessCode, setAccessCode] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [message, setMessage] = useState('');
     const [error, setError] = useState('');
+
+    const { login, user } = useAuth();
+    const navigate = useNavigate();
+
+    // Redirect if already logged in
+    React.useEffect(() => {
+        if (user) {
+            navigate('/', { replace: true });
+        }
+    }, [user, navigate]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
         setIsLoading(true);
         setError('');
-        setMessage('');
 
-        const { error: authError } = await supabase.auth.signInWithOtp({
-            email,
-            options: {
-                emailRedirectTo: window.location.origin,
-            }
-        });
+        const result = await login(accessCode.trim());
 
-        if (authError) {
-            setError(authError.message);
+        if (result.success) {
+            navigate('/', { replace: true });
         } else {
-            setMessage('Check your email for the magic link! ✉️');
+            setError(result.error || 'Invalid access code');
         }
 
         setIsLoading(false);
@@ -34,24 +38,29 @@ const AuthPage = () => {
         <div className="container auth-page">
             <div className="auth-card">
                 <h1>Welcome to Mirifer</h1>
-                <p className="instruction">Enter your email to receive a magic login link.</p>
+                <p className="instruction">Enter your access code to continue.</p>
 
                 <form onSubmit={handleLogin}>
                     <input
-                        type="email"
-                        placeholder="you@example.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        type="text"
+                        placeholder="Enter access code"
+                        value={accessCode}
+                        onChange={(e) => setAccessCode(e.target.value)}
                         required
                         className="auth-input"
+                        autoComplete="off"
+                        autoFocus
                     />
-                    <button type="submit" className="auth-button" disabled={isLoading}>
-                        {isLoading ? 'Sending...' : 'Send Magic Link'}
+                    <button type="submit" className="auth-button" disabled={isLoading || !accessCode.trim()}>
+                        {isLoading ? 'Verifying...' : 'Enter'}
                     </button>
                 </form>
 
-                {message && <p className="success-message">{message}</p>}
                 {error && <p className="error-message">{error}</p>}
+
+                <p className="trial-notice">
+                    This is a trial version. Contact admin for an access code.
+                </p>
             </div>
         </div>
     );
