@@ -35,8 +35,13 @@ const Home = () => {
             });
 
             if (response.ok) {
-                alert("Your data has been successfully deleted.");
-                localStorage.clear();
+                alert("Your reflection content has been successfully erased.");
+                // Remove day-specific data but KEEP auth keys
+                Object.keys(localStorage).forEach(key => {
+                    if (key.startsWith('mirifer_day_')) {
+                        localStorage.removeItem(key);
+                    }
+                });
                 window.location.reload();
             } else {
                 const errorData = await response.json();
