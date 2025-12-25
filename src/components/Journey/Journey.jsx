@@ -17,9 +17,10 @@ const Journey = () => {
             const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
             try {
-                const response = await fetch(`${apiUrl}/api/mirifer/entries`, {
+                const response = await fetch(`${apiUrl}/api/mirifer/entries?t=${Date.now()}`, {
                     headers: {
-                        'X-Access-Code': accessCode
+                        'X-Access-Code': accessCode,
+                        'Content-Type': 'application/json'
                     }
                 });
                 const data = await response.json();
