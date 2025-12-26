@@ -130,3 +130,19 @@
     background-color: #fef2f2 !important;
     opacity: 1;
 }
+
+.survey-prompt {
+    text-align: center;
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: #f7f6f3;
+    border-radius: 8px;
+    border-left: 4px solid var(--accent-color);
+}
+
+.survey-message {
+    font-size: 1rem;
+    color: var(--secondary-text);
+    font-style: italic;
+    margin-bottom: 1rem;
+}

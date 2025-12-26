@@ -12,7 +12,9 @@ import './Home.css';
 
 const Home = () => {
     const navigate = useNavigate();
-    const { signOut, user } = useAuth();
+    const { signOut, user, getAccessCode } = useAuth();
+    const [surveyStatus, setSurveyStatus] = React.useState({ submitted: false, loading: true });
+    const [journeyComplete, setJourneyComplete] = React.useState(false);
 
     // Format current date as "4 July 2025"
     const getCurrentDate = () => {
@@ -22,6 +24,37 @@ const Home = () => {
         const year = now.getFullYear();
         return `${day} ${month} ${year}`;
     };
+
+    // Check survey status and journey completion
+    React.useEffect(() => {
+        const checkStatus = async () => {
+            const accessCode = getAccessCode();
+            if (!accessCode) return;
+
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
+            try {
+                // Check survey status
+                const surveyRes = await fetch(`${apiUrl}/api/mirifer/survey/status`, {
+                    headers: { 'X-Access-Code': accessCode }
+                });
+                const surveyData = await surveyRes.json();
+                setSurveyStatus({ submitted: surveyData.submitted, loading: false });
+
+                // Check journey progress
+                const progressRes = await fetch(`${apiUrl}/api/mirifer/progress`, {
+                    headers: { 'X-Access-Code': accessCode }
+                });
+                const progressData = await progressRes.json();
+                setJourneyComplete(progressData.isComplete && progressData.hasCompleteData);
+            } catch (err) {
+                console.error('Failed to check status:', err);
+                setSurveyStatus({ submitted: false, loading: false });
+            }
+        };
+
+        checkStatus();
+    }, [getAccessCode]);
 
     const handleSignOut = async () => {
         await signOut();
@@ -78,6 +111,15 @@ const Home = () => {
             <Journey />
 
             <ReportButton />
+
+            {journeyComplete && !surveyStatus.submitted && !surveyStatus.loading && (
+                <div className="survey-prompt">
+                    <p className="survey-message">One final reflection awaits.</p>
+                    <NotionButton onClick={() => navigate('/survey')}>
+                        Complete Journey Reflection
+                    </NotionButton>
+                </div>
+            )}
 
             <Divider />
 
