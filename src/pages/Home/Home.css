@@ -134,17 +134,35 @@
 .survey-prompt {
     text-align: center;
     margin: 2rem 0;
-    padding: 1.5rem;
-    background: #f7f6f3;
-    border-radius: 8px;
-    border-left: 4px solid var(--accent-color);
+    padding: 2rem;
+    background: linear-gradient(135deg, #f0f7ff 0%, #e6f2ff 100%);
+    border-radius: 12px;
+    border: 2px solid var(--accent-color);
+    box-shadow: 0 4px 12px rgba(55, 125, 190, 0.1);
+}
+
+.survey-gratitude {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin: 0 0 1rem 0;
 }
 
 .survey-message {
-    font-size: 1rem;
-    color: var(--secondary-text);
-    font-style: italic;
-    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    color: var(--text-color);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.survey-button {
+    background: var(--accent-color) !important;
+    color: white !important;
+    font-size: 1.05rem !important;
+    padding: 12px 32px !important;
 }
 
 /* Mobile Optimization */

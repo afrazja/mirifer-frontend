@@ -4,8 +4,10 @@
 
 .journey-footer {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
     margin-top: 1rem;
+    gap: 1rem;
 }
 
 .delete-data-btn-bottom {

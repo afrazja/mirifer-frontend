@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MIRIFER_DAYS } from '../../data/days';
 import { useAuth } from '../../context/AuthContext';
 import NotionButton from '../NotionButton/NotionButton';
+import ReportButton from '../ReportButton/ReportButton';
 import './Journey.css';
 
 const Journey = () => {
@@ -122,6 +123,7 @@ const Journey = () => {
                 </div>
             </div>
             <div className="journey-footer">
+                <ReportButton />
                 <button
                     className="delete-data-btn-bottom"
                     onClick={handleDeleteData}

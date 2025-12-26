@@ -5,7 +5,6 @@ import Toggle from '../../components/Toggle/Toggle';
 import NotionButton from '../../components/NotionButton/NotionButton';
 import Divider from '../../components/Divider/Divider';
 import Journey from '../../components/Journey/Journey';
-import ReportButton from '../../components/ReportButton/ReportButton';
 import OnboardingModal from '../../components/OnboardingModal/OnboardingModal';
 import ProgressBar from '../../components/ProgressBar/ProgressBar';
 import { useAuth } from '../../context/AuthContext';
@@ -133,12 +132,17 @@ const Home = () => {
 
             <Journey />
 
-            <ReportButton />
-
             {journeyComplete && !surveyStatus.submitted && !surveyStatus.loading && (
                 <div className="survey-prompt">
-                    <p className="survey-message">One final reflection awaits.</p>
-                    <NotionButton onClick={() => navigate('/survey')}>
+                    <p className="survey-gratitude">🙏 Your reflection matters</p>
+                    <p className="survey-message">
+                        Completing this survey helps us understand how Mirifer impacts thinking.
+                        Your honest insights are invaluable—we're deeply grateful for your time.
+                    </p>
+                    <NotionButton
+                        onClick={() => navigate('/survey')}
+                        className="survey-button"
+                    >
                         Complete Journey Reflection
                     </NotionButton>
                 </div>
