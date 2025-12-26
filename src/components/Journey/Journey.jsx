@@ -23,7 +23,7 @@ const Journey = () => {
             const response = await fetch(`${apiUrl}/api/mirifer/data`, {
                 method: 'DELETE',
                 headers: {
-                    'X-Access-Code': user?.accessCode || localStorage.getItem('mirifer_access_code')
+                    'X-Access-Code': user?.accessCode || sessionStorage.getItem('mirifer_access_code')
                 }
             });
 

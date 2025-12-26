@@ -11,8 +11,8 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         // Check for saved access code on mount
-        const savedCode = localStorage.getItem('mirifer_access_code');
-        const savedUser = localStorage.getItem('mirifer_user');
+        const savedCode = sessionStorage.getItem('mirifer_access_code');
+        const savedUser = sessionStorage.getItem('mirifer_user');
 
         if (savedCode && savedUser) {
             setUser(JSON.parse(savedUser));
@@ -36,9 +36,9 @@ export const AuthProvider = ({ children }) => {
                 throw new Error(data.error || 'Invalid access code');
             }
 
-            // Store credentials
-            localStorage.setItem('mirifer_access_code', accessCode);
-            localStorage.setItem('mirifer_user', JSON.stringify(data.user));
+            // Store credentials in sessionStorage (clears on tab close)
+            sessionStorage.setItem('mirifer_access_code', accessCode);
+            sessionStorage.setItem('mirifer_user', JSON.stringify(data.user));
 
             setUser(data.user);
             return { success: true };
@@ -48,14 +48,14 @@ export const AuthProvider = ({ children }) => {
     };
 
     const signOut = () => {
-        localStorage.removeItem('mirifer_access_code');
-        localStorage.removeItem('mirifer_user');
+        sessionStorage.removeItem('mirifer_access_code');
+        sessionStorage.removeItem('mirifer_user');
         setUser(null);
     };
 
     // Get access code for API calls
     const getAccessCode = () => {
-        return localStorage.getItem('mirifer_access_code');
+        return sessionStorage.getItem('mirifer_access_code');
     };
 
     return (
