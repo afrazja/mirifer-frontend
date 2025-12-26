@@ -1,0 +1,171 @@
+.onboarding-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.onboarding-modal {
+    background: white;
+    border-radius: 12px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.close-button {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--secondary-text);
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.close-button:hover {
+    background: var(--bg-hover);
+}
+
+.onboarding-content {
+    padding: 3rem 2rem;
+}
+
+.onboarding-content h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 2rem;
+    text-align: center;
+}
+
+.subtitle {
+    text-align: center;
+    color: var(--secondary-text);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+.onboarding-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.step {
+    text-align: center;
+}
+
+.step-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.step h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+}
+
+.step p {
+    color: var(--secondary-text);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.onboarding-principles {
+    background: #f7f6f3;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.onboarding-principles p {
+    margin: 0 0 0.75rem 0;
+    font-weight: 600;
+}
+
+.onboarding-principles ul {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+.onboarding-principles li {
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.onboarding-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.skip-link {
+    background: none;
+    border: none;
+    color: var(--secondary-text);
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.skip-link:hover {
+    color: var(--accent-color);
+}
+
+@media (max-width: 768px) {
+    .onboarding-content {
+        padding: 2rem 1.5rem;
+    }
+
+    .onboarding-content h1 {
+        font-size: 1.5rem;
+    }
+
+    .onboarding-steps {
+        grid-template-columns: 1fr;
+    }
+}

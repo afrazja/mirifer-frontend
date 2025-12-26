@@ -15,10 +15,13 @@
 .button-primary {
     background-color: var(--accent-color);
     color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .button-primary:hover {
     background-color: #1a6ab5;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .button-secondary {
@@ -29,6 +32,8 @@
 
 .button-secondary:hover {
     background-color: var(--bg-hover);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
 }
 
 .notion-button-icon {

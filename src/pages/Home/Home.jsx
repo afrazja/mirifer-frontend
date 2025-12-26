@@ -6,6 +6,8 @@ import NotionButton from '../../components/NotionButton/NotionButton';
 import Divider from '../../components/Divider/Divider';
 import Journey from '../../components/Journey/Journey';
 import ReportButton from '../../components/ReportButton/ReportButton';
+import OnboardingModal from '../../components/OnboardingModal/OnboardingModal';
+import ProgressBar from '../../components/ProgressBar/ProgressBar';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
 import './Home.css';
@@ -15,6 +17,8 @@ const Home = () => {
     const { signOut, user, getAccessCode } = useAuth();
     const [surveyStatus, setSurveyStatus] = React.useState({ submitted: false, loading: true });
     const [journeyComplete, setJourneyComplete] = React.useState(false);
+    const [showOnboarding, setShowOnboarding] = React.useState(false);
+    const [completedDaysCount, setCompletedDaysCount] = React.useState(0);
 
     // Format current date as "4 July 2025"
     const getCurrentDate = () => {
@@ -48,6 +52,7 @@ const Home = () => {
                 const progressData = await progressRes.json();
                 // Show survey if user has completed at least 1 day (for testing)
                 setJourneyComplete(progressData.completedDays && progressData.completedDays.length > 0);
+                setCompletedDaysCount(progressData.completedDays ? progressData.completedDays.length : 0);
             } catch (err) {
                 console.error('Failed to check status:', err);
                 setSurveyStatus({ submitted: false, loading: false });
@@ -57,6 +62,19 @@ const Home = () => {
         checkStatus();
     }, [getAccessCode]);
 
+    // Check if first visit
+    React.useEffect(() => {
+        const hasSeenOnboarding = localStorage.getItem('mirifer_onboarding_seen');
+        if (!hasSeenOnboarding) {
+            setShowOnboarding(true);
+        }
+    }, []);
+
+    const handleCloseOnboarding = () => {
+        localStorage.setItem('mirifer_onboarding_seen', 'true');
+        setShowOnboarding(false);
+    };
+
     const handleSignOut = async () => {
         await signOut();
         navigate('/login');
@@ -64,6 +82,8 @@ const Home = () => {
 
     return (
         <div className="container home-page">
+            {showOnboarding && <OnboardingModal onClose={handleCloseOnboarding} />}
+
             <div className="top-nav">
                 <div className="user-badge">
                     <span className="user-code">{user?.accessCode || user?.displayName}</span>
@@ -108,6 +128,8 @@ const Home = () => {
                     </div>
                 </Toggle>
             </section>
+
+            <ProgressBar completedDays={completedDaysCount} totalDays={14} />
 
             <Journey />
 
