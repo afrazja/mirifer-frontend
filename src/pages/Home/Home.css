@@ -6,15 +6,16 @@
 .top-nav {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 20px;
     padding-top: 10px;
 }
 
-.user-info-group {
+.right-nav-group {
     display: flex;
-    align-items: center;
-    gap: 12px;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
 }
 
 .user-badge {
@@ -39,6 +40,7 @@
     font-size: 0.9rem;
     color: var(--secondary-text);
     font-weight: 400;
+    text-align: right;
 }
 
 .sign-out-top {

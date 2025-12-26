@@ -31,21 +31,21 @@ const Home = () => {
     return (
         <div className="container home-page">
             <div className="top-nav">
-                <div className="user-info-group">
-                    <div className="user-badge">
-                        <span className="user-code">{user?.accessCode || user?.displayName}</span>
-                    </div>
+                <div className="user-badge">
+                    <span className="user-code">{user?.accessCode || user?.displayName}</span>
+                </div>
+                <div className="right-nav-group">
                     <div className="date-display">
                         {getCurrentDate()}
                     </div>
+                    <NotionButton
+                        type="secondary"
+                        onClick={handleSignOut}
+                        className="sign-out-top"
+                    >
+                        Sign Out
+                    </NotionButton>
                 </div>
-                <NotionButton
-                    type="secondary"
-                    onClick={handleSignOut}
-                    className="sign-out-top"
-                >
-                    Sign Out
-                </NotionButton>
             </div>
 
             <header className="home-header notion-block">
