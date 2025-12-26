@@ -7,22 +7,26 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
 }
 
-.breadcrumb {
-    margin-bottom: 0;
+.back-link {
+    color: var(--secondary-text);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: var(--accent-color);
+}
+
+.progress-indicator {
     color: var(--secondary-text);
     font-size: 0.9rem;
-}
-
-.back-button {
-    font-size: 0.85rem !important;
-    padding: 6px 12px !important;
-}
-
-.breadcrumb a {
-    text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .day-title {

@@ -100,7 +100,7 @@ const Home = () => {
                         <ul>
                             <li>One question per day</li>
                             <li>One reflection with the Mirifer prompt</li>
-                            <li>Optional pattern check</li>
+                            <li>Mirifer's response</li>
                             <li>No advice, no fixing</li>
                             <li>Clear end each day</li>
                         </ul>

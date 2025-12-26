@@ -4,6 +4,7 @@ import { MIRIFER_DAYS } from '../../data/days';
 import Callout from '../../components/Callout/Callout';
 import Divider from '../../components/Divider/Divider';
 import NotionButton from '../../components/NotionButton/NotionButton';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 
 import { useAuth } from '../../context/AuthContext';
 import './DayPage.css';
@@ -176,16 +177,8 @@ const DayPage = () => {
     return (
         <div className="container day-page">
             <nav className="breadcrumb-nav">
-                <nav className="breadcrumb">
-                    <Link to="/">Mirifer</Link> / Day {dayId}
-                </nav>
-                <NotionButton
-                    type="secondary"
-                    onClick={() => navigate('/')}
-                    className="back-button"
-                >
-                    Back
-                </NotionButton>
+                <Link to="/" className="back-link">← Back to Journey</Link>
+                <span className="progress-indicator">Day {dayId} of 14</span>
             </nav>
 
             <header className="day-header notion-block">
