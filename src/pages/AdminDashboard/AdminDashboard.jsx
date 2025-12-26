@@ -21,6 +21,7 @@ const AdminDashboard = () => {
 
     const fetchMetrics = async (adminPassword) => {
         setLoading(true);
+        setError('');
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
         try {
@@ -30,15 +31,22 @@ const AdminDashboard = () => {
                 }
             });
 
+            if (response.status === 401) {
+                setError('Authentication failed. Check if ADMIN_PASSWORD is set in Render.');
+                setLoading(false);
+                return;
+            }
+
             if (!response.ok) {
-                throw new Error('Failed to fetch metrics');
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || `Server error: ${response.status}`);
             }
 
             const data = await response.json();
             setMetrics(data);
         } catch (err) {
             console.error('Metrics fetch error:', err);
-            setError('Failed to load metrics');
+            setError(`Failed to load metrics: ${err.message}`);
         } finally {
             setLoading(false);
         }
@@ -91,8 +99,16 @@ const AdminDashboard = () => {
             <div className="admin-dashboard">
                 <div className="dashboard-header">
                     <h1>📊 Mirifer Analytics</h1>
+                    <button onClick={handleLogout} className="logout-button">
+                        Logout
+                    </button>
                 </div>
-                <div className="error-state">Failed to load metrics</div>
+                <div className="error-state">
+                    <p>{error || 'Failed to load metrics'}</p>
+                    <button onClick={() => fetchMetrics(password)} className="refresh-button" style={{ marginTop: '1rem' }}>
+                        Try Again
+                    </button>
+                </div>
             </div>
         );
     }
