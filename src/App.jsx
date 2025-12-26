@@ -7,6 +7,7 @@ import PatternOverview from './pages/PatternOverview/PatternOverview';
 import FinalDirection from './pages/FinalDirection/FinalDirection';
 import AuthPage from './pages/Auth/AuthPage';
 import SurveyPage from './pages/SurveyPage/SurveyPage';
+import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
 
 // Protected route wrapper
 const ProtectedRoute = ({ children }) => {
@@ -37,6 +38,7 @@ function AppRoutes() {
         <Route path="/patterns" element={<ProtectedRoute><PatternOverview /></ProtectedRoute>} />
         <Route path="/direction" element={<ProtectedRoute><FinalDirection /></ProtectedRoute>} />
         <Route path="/survey" element={<ProtectedRoute><SurveyPage /></ProtectedRoute>} />
+        <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
     </div>
   );
