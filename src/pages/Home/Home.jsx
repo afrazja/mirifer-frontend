@@ -46,7 +46,8 @@ const Home = () => {
                     headers: { 'X-Access-Code': accessCode }
                 });
                 const progressData = await progressRes.json();
-                setJourneyComplete(progressData.isComplete && progressData.hasCompleteData);
+                // Show survey if user has completed at least 1 day (for testing)
+                setJourneyComplete(progressData.completedDays && progressData.completedDays.length > 0);
             } catch (err) {
                 console.error('Failed to check status:', err);
                 setSurveyStatus({ submitted: false, loading: false });
