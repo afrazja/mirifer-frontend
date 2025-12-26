@@ -154,3 +154,34 @@
     color: var(--success-color);
     margin-bottom: 8px;
 }
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+    .breadcrumb-nav {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .progress-indicator {
+        font-size: 0.85rem;
+    }
+
+    .reflection-input {
+        min-height: 250px;
+        font-size: 1rem;
+    }
+
+    .day-title {
+        font-size: 1.5rem;
+    }
+
+    .close-section {
+        padding: 1rem;
+    }
+
+    .notion-button {
+        width: 100%;
+        justify-content: center;
+    }
+}

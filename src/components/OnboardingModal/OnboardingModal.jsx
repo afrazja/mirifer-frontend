@@ -8,7 +8,7 @@ const OnboardingModal = ({ onClose }) => {
 
     const handleStartJourney = () => {
         onClose();
-        navigate('/day/1');
+        // User stays on home page to see journey table
     };
 
     return (
