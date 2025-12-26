@@ -28,10 +28,6 @@ const Home = () => {
         navigate('/login');
     };
 
-    // Logic moved to Journey.jsx for better positioning near the table
-
-
-
     return (
         <div className="container home-page">
             <div className="top-nav">
@@ -51,55 +47,52 @@ const Home = () => {
                     Sign Out
                 </NotionButton>
             </div>
+
             <header className="home-header notion-block">
                 <div className="header-content">
                     <div className="header-top">
                         <img src="/logo.png" alt="Mirifer Logo" className="site-logo" />
                         <h1>Mirifer — Uncertainty Reduction System</h1>
                     </div>
-
-                    <section className="orientation notion-block">
-                        <Callout icon="🧭">
-                            <strong>Mirifer helps you reduce uncertainty — not solve your life.</strong>
-                            <ul style={{ marginTop: '8px', paddingLeft: '20px' }}>
-                                <li>Each day takes 10–15 minutes.</li>
-                                <li>There is nothing to optimize.</li>
-                                <li>When today’s step is done, you stop.</li>
-                            </ul>
-                        </Callout>
-                    </section>
-
-                    <section className="how-it-works notion-block">
-                        <Toggle title="How Mirifer Works">
-                            <div className="explanation-content">
-                                <ul>
-                                    <li>One question per day</li>
-                                    <li>One reflection with the Mirifer prompt</li>
-                                    <li>Optional pattern check</li>
-                                    <li>No advice, no fixing</li>
-                                    <li>Clear end each day</li>
-                                </ul>
-                                <p><em>Completion matters more than intensity.</em></p>
-                            </div>
-                        </Toggle>
-                    </section>
-
-                    <Journey />
-
-                    <ReportButton />
-
-                    <Divider />
-
-                    <section className="extra-links notion-block" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                        <NotionButton
-                            type="secondary"
-                            onClick={() => navigate('/direction')}
-                        >
-                            Your Direction
-                        </NotionButton>
-                    </section>
+                    <ul className="header-principles">
+                        <li>Each day takes 10–15 minutes.</li>
+                        <li>There is nothing to optimize.</li>
+                        <li>When today's step is done, you stop.</li>
+                    </ul>
                 </div>
-                );
+            </header>
+
+            <section className="how-it-works notion-block">
+                <Toggle title="How Mirifer Works">
+                    <div className="explanation-content">
+                        <ul>
+                            <li>One question per day</li>
+                            <li>One reflection with the Mirifer prompt</li>
+                            <li>Optional pattern check</li>
+                            <li>No advice, no fixing</li>
+                            <li>Clear end each day</li>
+                        </ul>
+                        <p><em>Completion matters more than intensity.</em></p>
+                    </div>
+                </Toggle>
+            </section>
+
+            <Journey />
+
+            <ReportButton />
+
+            <Divider />
+
+            <section className="extra-links notion-block" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                <NotionButton
+                    type="secondary"
+                    onClick={() => navigate('/direction')}
+                >
+                    Your Direction
+                </NotionButton>
+            </section>
+        </div>
+    );
 };
 
-                export default Home;
+export default Home;
