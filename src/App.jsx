@@ -3,8 +3,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Home from './pages/Home/Home';
 import DayPage from './pages/DayPage/DayPage';
-import PatternOverview from './pages/PatternOverview/PatternOverview';
-import FinalDirection from './pages/FinalDirection/FinalDirection';
 import AuthPage from './pages/Auth/AuthPage';
 import SurveyPage from './pages/SurveyPage/SurveyPage';
 import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
@@ -35,8 +33,6 @@ function AppRoutes() {
         <Route path="/login" element={<AuthPage />} />
         <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
         <Route path="/day/:id" element={<ProtectedRoute><DayPage /></ProtectedRoute>} />
-        <Route path="/patterns" element={<ProtectedRoute><PatternOverview /></ProtectedRoute>} />
-        <Route path="/direction" element={<ProtectedRoute><FinalDirection /></ProtectedRoute>} />
         <Route path="/survey" element={<ProtectedRoute><SurveyPage /></ProtectedRoute>} />
         <Route path="/admin" element={<AdminDashboard />} />
       </Routes>

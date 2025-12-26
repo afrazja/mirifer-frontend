@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { MIRIFER_DAYS, PATTERN_OPTIONS } from '../../data/days';
+import { MIRIFER_DAYS } from '../../data/days';
 import Callout from '../../components/Callout/Callout';
 import Divider from '../../components/Divider/Divider';
 import NotionButton from '../../components/NotionButton/NotionButton';
@@ -16,7 +16,7 @@ const DayPage = () => {
     const dayData = MIRIFER_DAYS.find(d => d.day === dayId);
 
     const [reflection, setReflection] = useState('');
-    const [patterns, setPatterns] = useState([]);
+
     const [isCompleted, setIsCompleted] = useState(false);
     const [llmResponse, setLlmResponse] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -48,7 +48,7 @@ const DayPage = () => {
                     } else {
                         // Reset for new day
                         setReflection('');
-                        setPatterns([]);
+
                         setIsCompleted(false);
                         setLlmResponse('');
                         setGenerationCount(0);
@@ -63,10 +63,10 @@ const DayPage = () => {
     }, [dayId, getAccessCode]);
 
     // Save to Backend and LocalStorage
-    const saveData = async (newReflection, newPatterns, completedStatus = isCompleted, newLlmResponse = llmResponse, newGenCount = generationCount) => {
+    const saveData = async (newReflection, completedStatus = isCompleted, newLlmResponse = llmResponse, newGenCount = generationCount) => {
         const content = {
             reflection: newReflection,
-            patterns: newPatterns,
+
             isCompleted: completedStatus,
             llmResponse: newLlmResponse,
             generationCount: newGenCount
@@ -157,7 +157,7 @@ const DayPage = () => {
                 const newCount = generationCount + 1;
                 setGenerationCount(newCount);
                 // Backend now saves directly, but we still call saveData for local state sync
-                saveData(reflection, patterns, isCompleted, data.text, newCount);
+                saveData(reflection, isCompleted, data.text, newCount);
             }
         } catch (err) {
             setError('Could not connect to the Mirifer server.');
@@ -168,7 +168,7 @@ const DayPage = () => {
 
     const closeDay = () => {
         setIsCompleted(true);
-        saveData(reflection, patterns, true);
+        saveData(reflection, true);
     };
 
     if (!dayData) return <div className="container">Day not found.</div>;
@@ -210,23 +210,7 @@ const DayPage = () => {
                 />
             </section>
 
-            <section className="pattern-check-section notion-block">
-                <h3>Pattern Check (Optional)</h3>
-                <div className="pattern-grid">
-                    {PATTERN_OPTIONS.map(pattern => (
-                        <label key={pattern} className={`pattern-item ${patterns.includes(pattern) ? 'checked' : ''}`}>
-                            <input
-                                type="checkbox"
-                                checked={patterns.includes(pattern)}
-                                onChange={() => togglePattern(pattern)}
-                                disabled={isCompleted}
-                            />
-                            <span className="checkbox-custom"></span>
-                            {pattern}
-                        </label>
-                    ))}
-                </div>
-            </section>
+
 
             <section className="mirifer-reflection-section notion-block">
                 <h3>Mirifer's Reflection</h3>

@@ -122,16 +122,6 @@ const Home = () => {
                 </div>
             )}
 
-            <Divider />
-
-            <section className="extra-links notion-block" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                <NotionButton
-                    type="secondary"
-                    onClick={() => navigate('/direction')}
-                >
-                    Your Direction
-                </NotionButton>
-            </section>
         </div>
     );
 };
