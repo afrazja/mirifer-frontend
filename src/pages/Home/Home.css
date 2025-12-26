@@ -47,10 +47,19 @@
 }
 
 .home-header {
+    margin-bottom: 2rem;
+}
+
+.header-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.header-top {
     display: flex;
     align-items: center;
     gap: 16px;
-    margin-bottom: 2rem;
 }
 
 .site-logo {
