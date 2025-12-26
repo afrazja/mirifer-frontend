@@ -34,18 +34,16 @@ const Home = () => {
                 <div className="user-badge">
                     <span className="user-code">{user?.accessCode || user?.displayName}</span>
                 </div>
-                <div className="right-nav-group">
-                    <div className="date-display">
-                        {getCurrentDate()}
-                    </div>
-                    <NotionButton
-                        type="secondary"
-                        onClick={handleSignOut}
-                        className="sign-out-top"
-                    >
-                        Sign Out
-                    </NotionButton>
+                <div className="date-display">
+                    {getCurrentDate()}
                 </div>
+                <NotionButton
+                    type="secondary"
+                    onClick={handleSignOut}
+                    className="sign-out-top"
+                >
+                    Sign Out
+                </NotionButton>
             </div>
 
             <header className="home-header notion-block">
