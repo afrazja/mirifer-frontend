@@ -11,6 +11,12 @@
     padding-top: 10px;
 }
 
+.user-info-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
 .user-badge {
     display: flex;
     align-items: center;
@@ -27,6 +33,12 @@
     font-weight: 600;
     color: var(--accent-color);
     letter-spacing: 0.05em;
+}
+
+.date-display {
+    font-size: 0.9rem;
+    color: var(--secondary-text);
+    font-weight: 400;
 }
 
 .sign-out-top {

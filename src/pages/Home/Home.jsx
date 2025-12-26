@@ -14,6 +14,15 @@ const Home = () => {
     const navigate = useNavigate();
     const { signOut, user } = useAuth();
 
+    // Format current date as "4 July 2025"
+    const getCurrentDate = () => {
+        const now = new Date();
+        const day = now.getDate();
+        const month = now.toLocaleDateString('en-US', { month: 'long' });
+        const year = now.getFullYear();
+        return `${day} ${month} ${year}`;
+    };
+
     const handleSignOut = async () => {
         await signOut();
         navigate('/login');
@@ -26,8 +35,13 @@ const Home = () => {
     return (
         <div className="container home-page">
             <div className="top-nav">
-                <div className="user-badge">
-                    <span className="user-code">{user?.accessCode || user?.displayName}</span>
+                <div className="user-info-group">
+                    <div className="user-badge">
+                        <span className="user-code">{user?.accessCode || user?.displayName}</span>
+                    </div>
+                    <div className="date-display">
+                        {getCurrentDate()}
+                    </div>
                 </div>
                 <NotionButton
                     type="secondary"
