@@ -145,7 +145,7 @@ const DayPage = () => {
                     userText: reflection,
                     title: dayData?.title || `Day ${dayId}`,
                     question: dayData?.question || '',
-                    mode: dayId === 14 ? 'synthesis' : 'mirror'
+                    mode: (dayId === 7 || dayId === 14) ? 'synthesis' : 'mirror'
                 })
             });
 
