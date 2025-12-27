@@ -707,3 +707,31 @@ app.get('/api/mirifer/report-7.pdf', requireUser, async (req, res) => {
     }
 });
 
+
+// Test endpoint: Generate a simple test PDF
+app.get('/api/test/pdf', requireUser, async (req, res) => {
+    try {
+        const PDFDocument = require('pdfkit');
+        const doc = new PDFDocument();
+        
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename="test-report.pdf"');
+        
+        doc.pipe(res);
+        
+        doc.fontSize(25)
+           .text('Your Report is Ready!', 100, 100);
+        
+        doc.fontSize(12)
+           .text(`Generated at: ${new Date().toISOString()}`, 100, 150);
+        
+        doc.fontSize(10)
+           .text(`User: ${req.user.access_code}`, 100, 180);
+        
+        doc.end();
+    } catch (error) {
+        console.error('Test PDF Error:', error);
+        res.status(500).json({ error: 'Failed to generate test PDF' });
+    }
+});
+
