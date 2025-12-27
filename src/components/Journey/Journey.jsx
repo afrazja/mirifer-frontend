@@ -95,6 +95,21 @@ const Journey = () => {
         return status.toLowerCase().replace(' ', '-');
     };
 
+    const isDayLocked = (dayNumber) => {
+        // Day 1 is always unlocked
+        if (dayNumber === 1) return false;
+
+        // Check if previous day is complete
+        const previousDayStatus = getStatus(dayNumber - 1);
+        return previousDayStatus !== 'Complete';
+    };
+
+    const handleDayClick = (dayNumber) => {
+        if (!isDayLocked(dayNumber)) {
+            navigate(`/day/${dayNumber}`);
+        }
+    };
+
     return (
         <div className="journey-database">
             <h3 className="notion-block">Mirifer Journey</h3>
@@ -105,21 +120,28 @@ const Journey = () => {
                     <div className="col-status">Status</div>
                 </div>
                 <div className="table-body">
-                    {MIRIFER_DAYS.map((day) => (
-                        <div
-                            key={day.day}
-                            className="table-row"
-                            onClick={() => navigate(`/day/${day.day}`)}
-                        >
-                            <div className="col-day">{day.day}</div>
-                            <div className="col-title">{day.title}</div>
-                            <div className="col-status">
-                                <span className={`status-pill ${getStatusClass(getStatus(day.day))}`}>
-                                    {getStatus(day.day)}
-                                </span>
+                    {MIRIFER_DAYS.map((day) => {
+                        const locked = isDayLocked(day.day);
+                        const status = getStatus(day.day);
+                        return (
+                            <div
+                                key={day.day}
+                                className={`table-row ${locked ? 'locked' : ''}`}
+                                onClick={() => handleDayClick(day.day)}
+                                style={{ cursor: locked ? 'not-allowed' : 'pointer' }}
+                            >
+                                <div className="col-day">
+                                    {locked && '🔒 '}{day.day}
+                                </div>
+                                <div className="col-title">{day.title}</div>
+                                <div className="col-status">
+                                    <span className={`status-pill ${getStatusClass(status)}`}>
+                                        {status}
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
             <div className="journey-footer">

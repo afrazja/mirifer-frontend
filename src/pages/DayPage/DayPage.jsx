@@ -178,7 +178,7 @@ const DayPage = () => {
         <div className="container day-page">
             <nav className="breadcrumb-nav">
                 <Link to="/" className="back-link">← Back to Journey</Link>
-                <span className="progress-indicator">Day {dayId} of 7</span>
+                <span className="progress-indicator">Day {dayId} of 14</span>
             </nav>
 
             <header className="day-header notion-block">

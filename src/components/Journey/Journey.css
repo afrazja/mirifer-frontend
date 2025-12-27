@@ -97,3 +97,14 @@
     background-color: #f1fcf1;
     color: var(--success-color);
 }
+
+/* Locked day styles */
+.table-row.locked {
+    opacity: 0.5;
+    background-color: #f5f5f5;
+}
+
+.table-row.locked:hover {
+    background-color: #f5f5f5;
+    cursor: not-allowed !important;
+}
