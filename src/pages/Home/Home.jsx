@@ -128,7 +128,7 @@ const Home = () => {
                 </Toggle>
             </section>
 
-            <ProgressBar completedDays={completedDaysCount} totalDays={14} />
+            <ProgressBar completedDays={completedDaysCount} totalDays={7} />
 
             <Journey />
 

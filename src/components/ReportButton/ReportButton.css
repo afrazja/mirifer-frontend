@@ -1,10 +1,21 @@
 .report-button-container {
-    margin-top: 1.5rem;
-    text-align: center;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
 }
 
 .report-button {
-    min-width: 250px;
+    background: white !important;
+    color: var(--text-color) !important;
+    border: 2px solid var(--border-color) !important;
+    font-size: 0.9rem !important;
+    padding: 8px 16px !important;
+}
+
+.report-button:hover:not(:disabled) {
+    border-color: var(--text-color) !important;
+    background: var(--bg-hover) !important;
 }
 
 .report-message {
