@@ -404,12 +404,11 @@ app.get('/api/mirifer/progress', requireUser, async (req, res) => {
 // Protected route: Generate PDF report (flexible - works with any completed days)
 app.get('/api/mirifer/report.pdf', requireUser, async (req, res) => {
     try {
-        // Fetch all COMPLETED entries for this user
-        const { data: entries, error: dbError } = await supabaseAdmin
+        // Fetch all entries for this user
+        const { data: allEntries, error: dbError } = await supabaseAdmin
             .from('entries')
             .select('day, title, question, user_text, ai_text, mode, created_at')
             .eq('trial_user_id', req.user.id)
-            .eq('is_completed', true)
             .order('day', { ascending: true });
 
         if (dbError) {
@@ -417,7 +416,13 @@ app.get('/api/mirifer/report.pdf', requireUser, async (req, res) => {
             return res.status(500).json({ error: 'Failed to fetch entries' });
         }
 
-        // Validation: Must have at least 1 completed day
+        // Filter to only entries with actual data (not deleted)
+        const entries = allEntries.filter(e =>
+            e.user_text && e.user_text.trim().length > 0 &&
+            e.ai_text && e.ai_text.trim().length > 0
+        );
+
+        // Validation: Must have at least 1 completed day with data
         if (!entries || entries.length === 0) {
             return res.status(409).json({
                 error: 'REPORT_INCOMPLETE',
@@ -425,20 +430,7 @@ app.get('/api/mirifer/report.pdf', requireUser, async (req, res) => {
             });
         }
 
-        // Check that all entries have complete data
-        const hasCompleteData = entries.every(e =>
-            e.user_text && e.user_text.trim().length > 0 &&
-            e.ai_text && e.ai_text.trim().length > 0
-        );
-
-        if (!hasCompleteData) {
-            return res.status(409).json({
-                error: 'REPORT_INCOMPLETE',
-                message: 'Report unavailable: some reflections are incomplete.'
-            });
-        }
-
-        // Generate PDF with whatever days are available
+        // Generate PDF with whatever days have data
         const pdfDoc = generateMiriferReport(entries, {
             accessCode: req.user.access_code,
             daysCompleted: entries.length
