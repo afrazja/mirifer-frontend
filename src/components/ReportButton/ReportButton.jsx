@@ -41,19 +41,17 @@ const ReportButton = () => {
         }
     };
 
-    const handleDownloadReport = async (reportType) => {
+    const handleDownloadReport = async () => {
         const accessCode = getAccessCode();
         if (!accessCode) return;
 
-        const setDownloading = reportType === '7' ? setDownloading7 : setDownloading14;
-        setDownloading(true);
+        setDownloading7(true);
         setError('');
 
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-        const endpoint = reportType === '7' ? '/api/mirifer/report-7.pdf' : '/api/mirifer/report.pdf';
 
         try {
-            const response = await fetch(`${apiUrl}${endpoint}`, {
+            const response = await fetch(`${apiUrl}/api/mirifer/report.pdf`, {
                 headers: {
                     'X-Access-Code': accessCode
                 }
@@ -62,13 +60,13 @@ const ReportButton = () => {
             if (response.status === 409) {
                 const errorData = await response.json();
                 setError(errorData.message || 'Report unavailable: your journey data is incomplete.');
-                setDownloading(false);
+                setDownloading7(false);
                 return;
             }
 
             if (!response.ok) {
                 setError('Failed to generate report. Please try again.');
-                setDownloading(false);
+                setDownloading7(false);
                 return;
             }
 
@@ -77,7 +75,7 @@ const ReportButton = () => {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = reportType === '7' ? 'mirifer-7day-report.pdf' : 'mirifer-14day-report.pdf';
+            a.download = 'mirifer-report.pdf';
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
@@ -87,7 +85,7 @@ const ReportButton = () => {
             console.error('Download error:', err);
             setError('Could not connect to the server. Please try again.');
         } finally {
-            setDownloading(false);
+            setDownloading7(false);
         }
     };
 
