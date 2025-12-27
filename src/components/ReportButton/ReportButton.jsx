@@ -94,38 +94,22 @@ const ReportButton = () => {
     }
 
     const completedDays = progress?.completedDays?.length || 0;
-    const has7Days = completedDays >= 7;
-    const has14Days = completedDays >= 14;
 
-    // Don't show anything if less than 7 days
-    if (completedDays < 7) {
+    // Don't show button if no days completed
+    if (completedDays === 0) {
         return null;
     }
 
     return (
         <div className="report-button-container">
-            {has7Days && (
-                <NotionButton
-                    type="secondary"
-                    onClick={() => handleDownloadReport('7')}
-                    disabled={downloading7}
-                    className="report-button"
-                >
-                    {downloading7 ? 'Generating...' : 'Generate 7-Day Report'}
-                </NotionButton>
-            )}
-
-            {has14Days && (
-                <NotionButton
-                    type="secondary"
-                    onClick={() => handleDownloadReport('14')}
-                    disabled={downloading14}
-                    className="report-button"
-                    style={{ marginLeft: has7Days ? '1rem' : '0' }}
-                >
-                    {downloading14 ? 'Generating...' : 'Generate 14-Day Report'}
-                </NotionButton>
-            )}
+            <NotionButton
+                type="secondary"
+                onClick={handleDownloadReport}
+                disabled={downloading7}
+                className="report-button"
+            >
+                {downloading7 ? 'Generating...' : `Generate Report (${completedDays} ${completedDays === 1 ? 'day' : 'days'})`}
+            </NotionButton>
 
             {error && (
                 <p className="report-error">
