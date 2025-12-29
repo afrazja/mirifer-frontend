@@ -27,10 +27,9 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// DeepSeek Client Configuration
+// OpenAI Client Configuration (ChatGPT)
 const openai = new OpenAI({
-    apiKey: process.env.DEEPSEEK_API_KEY,
-    baseURL: 'https://api.deepseek.com/v1',
+    apiKey: process.env.OPENAI_API_KEY,
 });
 
 // Guardrails & Prompts
@@ -41,36 +40,59 @@ Your role is NOT to advise, coach, motivate, reassure, diagnose, or plan.
 Your role is to REDUCE MENTAL NOISE through precise reflection and compression.
 
 NON-NEGOTIABLE RULES:
-- Do NOT give advice or action steps.
-- Do NOT suggest what to do next.
-- Do NOT motivate, encourage, or reassure.
-- Do NOT diagnose or reference therapy or mental health.
-- Do NOT ask follow-up questions.
-- Do NOT expand possibilities.
-- Use calm, adult, non-judgmental language.
-- Keep the response concise and settling.
+- Do NOT give advice or action steps
+- Do NOT suggest what to do next
+- Do NOT motivate, encourage, or reassure
+- Do NOT diagnose or reference therapy or mental health
+- Do NOT ask follow-up questions
+- Do NOT expand possibilities
+- Use calm, adult, non-judgmental language
+- Keep the response concise and settling
 - End every response with the exact line: "Today is complete."
 
 TASK (Mirror Mode):
-- Identify the core tension or structural conflict.
-- Name the underlying value, assumption, or framing shaping the tension.
-- Reflect contradictions or tradeoffs the user is holding.
-- Prefer inevitability over interpretation.
-- Do NOT reframe into optimism or growth.
-- Length: 3–5 short paragraphs OR 4–6 concise sentences total.
+You will receive the user's current reflection, and possibly context from their previous 2-3 days.
 
-STYLE GUIDELINES:
-- Use declarative statements, not analysis language.
-- Compress insight so it feels inevitable, not exploratory.
-- Avoid abstract psychology terms.
-- Avoid poetic or inspirational tone.
-- Each sentence should reduce uncertainty, not add insight branches.
+Your task is to:
+1. **Identify the structural constraint** - What fundamental limitation or tradeoff is shaping this situation?
+2. **Name the underlying assumption** - What belief or framing is creating the tension?
+3. **Spot the contradiction** - Where are they holding incompatible expectations?
+4. **Use their language** - Quote or reference specific phrases they used
+5. **Avoid repetition** - If previous days noted similar patterns, acknowledge evolution or deepening rather than restating
+
+ANALYTICAL DEPTH:
+- Go beyond surface emotions to structural logic
+- Identify the **inevitability** in their situation (what cannot be changed)
+- Name the **tradeoff** they're navigating (what must be sacrificed for what)
+- Recognize **competing values** (what two good things are in tension)
+- Spot **framing effects** (how their description shapes their experience)
+
+SPECIFICITY REQUIREMENTS:
+- Reference concrete details from their reflection
+- Use their exact words when identifying patterns
+- Avoid generic terms like "uncertainty," "fear," "growth" unless they used them
+- Ground every observation in something they actually said
+
+COMPRESSION TECHNIQUES:
+- Prefer declarative statements over exploratory language
+- "This is X" not "It seems like X might be..."
+- "The tension exists between X and Y" not "You're experiencing tension..."
+- Make each sentence reduce uncertainty, not add branches
+- Compress multiple observations into single inevitable statements
+
+VARIATION:
+- Don't start every response the same way
+- Vary which element you lead with (tension, pattern, assumption, contradiction)
+- Mix short punchy sentences with longer structural analysis
+- Sometimes use a single powerful observation, sometimes build a logical chain
+
+LENGTH: 3–5 short paragraphs OR 4–6 concise sentences total (100-150 words)
 
 OUTPUT FORMAT:
-- Plain text paragraphs only.
-- No bullet points.
-- No headings.
-- Final line must be exactly: Today is complete.
+- Plain text paragraphs only
+- No bullet points
+- No headings
+- Final line must be exactly: "Today is complete."
 `;
 
 const SYNTHESIS_SYSTEM_PROMPT = `
@@ -141,6 +163,64 @@ OUTPUT FORMAT:
 - Final line must be exactly: Today is complete.
 `;
 
+
+const FINAL_THOUGHTS_PROMPT = `
+You are Mirifer, an Uncertainty Reduction System. You have access to a user's complete journey reflections.
+
+Write a "Final Thoughts" section (200-250 words) that:
+1. Identifies the 2-3 most recurring patterns across ALL days
+2. Names the core tension or structural constraint that emerged
+3. Observes how their thinking evolved from first day to last day
+4. Notes any shifts in framing or perspective
+
+CRITICAL RULES:
+- Use past tense and third-person perspective
+- "The reflections revealed..." NOT "You revealed..."
+- "A pattern emerged..." NOT "You show a pattern of..."
+- NO advice, suggestions, or action steps
+- NO questions to the user
+- NO motivational language
+- Calm, neutral, observational tone
+- Compress insight so it feels inevitable
+- Avoid psychology jargon
+
+OUTPUT:
+Write 2-3 paragraphs, 200-250 words total.
+End with: "This marks the completion of [N] days of documented reflection." (replace [N] with actual number)
+`;
+
+// Generate Final Thoughts using AI
+async function generateFinalThoughts(entries) {
+    try {
+        // Build context from all entries
+        let context = `The user completed ${entries.length} days of reflection. Below are ALL their reflections:\n\n`;
+
+        entries.forEach(entry => {
+            context += `Day ${entry.day} - ${entry.title}\n`;
+            context += `Question: ${entry.question}\n`;
+            context += `User's reflection: ${entry.user_text}\n`;
+            context += `Your response: ${entry.ai_text}\n\n`;
+        });
+
+        context += `\nWrite a "Final Thoughts" section following the rules above. Replace [N] with ${entries.length}.`;
+
+        // Call DeepSeek
+        const response = await openai.chat.completions.create({
+            model: 'gpt-4o-mini',
+            messages: [
+                { role: 'system', content: FINAL_THOUGHTS_PROMPT },
+                { role: 'user', content: context }
+            ],
+            temperature: 0.3,
+            max_tokens: 500
+        });
+
+        return response.choices[0].message.content;
+    } catch (error) {
+        console.error('Final Thoughts Generation Error:', error);
+        return null;
+    }
+}
 // Login endpoint - validate access code
 app.post('/api/auth/login', async (req, res) => {
     try {
@@ -200,6 +280,33 @@ app.post('/api/mirifer/respond', requireUser, async (req, res) => {
         let systemPrompt = MIRROR_SYSTEM_PROMPT;
         let userPrompt = userText;
 
+        // For mirror mode, add context from previous 2-3 days
+        if (!isSynthesis && day > 1) {
+            // Fetch previous 2-3 days for context
+            const { data: previousDays, error: fetchError } = await supabaseAdmin
+                .from('entries')
+                .select('day, question, user_text, ai_text')
+                .eq('trial_user_id', req.user.id)
+                .lt('day', day)
+                .order('day', { ascending: false })
+                .limit(3);
+
+            if (!fetchError && previousDays && previousDays.length > 0) {
+                // Build context string
+                let context = "PREVIOUS DAYS CONTEXT:\n\n";
+                previousDays.reverse().forEach(entry => {
+                    context += `Day ${entry.day}: ${entry.question}\n`;
+                    context += `User: ${entry.user_text.substring(0, 200)}${entry.user_text.length > 200 ? '...' : ''}\n`;
+                    context += `Mirifer: ${entry.ai_text.substring(0, 150)}${entry.ai_text.length > 150 ? '...' : ''}\n\n`;
+                });
+
+                context += `\nCURRENT DAY ${day}:\n${userText}\n\n`;
+                context += "Reflect on today's entry. Reference previous patterns if relevant, but focus on what's new or deepening.";
+
+                userPrompt = context;
+            }
+        }
+
         // For synthesis days, fetch previous entries and build comprehensive prompt
         if (isSynthesis) {
             const daysToFetch = day === 7 ? 7 : 14;
@@ -237,13 +344,13 @@ app.post('/api/mirifer/respond', requireUser, async (req, res) => {
         }
 
         const response = await openai.chat.completions.create({
-            model: 'deepseek-chat',
+            model: 'gpt-4o-mini',
             messages: [
                 { role: 'system', content: systemPrompt },
                 { role: 'user', content: userPrompt },
             ],
-            temperature: 0.3,
-            max_tokens: isSynthesis ? 1500 : 1000,
+            temperature: 0.45, // Increased for more varied, less repetitive responses
+            max_tokens: isSynthesis ? 1500 : 300, // Reduced for daily reflections to force compression
         });
 
         const aiText = response.choices[0].message.content;
@@ -430,10 +537,18 @@ app.get('/api/mirifer/report.pdf', requireUser, async (req, res) => {
             });
         }
 
+        // Generate Final Thoughts using AI (if 3+ days completed)
+        let finalThoughts = null;
+        if (entries.length >= 3) {
+            console.log(`Generating Final Thoughts for ${entries.length} days...`);
+            finalThoughts = await generateFinalThoughts(entries);
+        }
+
         // Generate PDF with whatever days have data
         const pdfDoc = generateMiriferReport(entries, {
             accessCode: req.user.access_code,
-            daysCompleted: entries.length
+            daysCompleted: entries.length,
+            finalThoughts: finalThoughts
         });
 
         res.setHeader('Content-Type', 'application/pdf');
@@ -713,21 +828,21 @@ app.get('/api/test/pdf', requireUser, async (req, res) => {
     try {
         const PDFDocument = require('pdfkit');
         const doc = new PDFDocument();
-        
+
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', 'attachment; filename="test-report.pdf"');
-        
+
         doc.pipe(res);
-        
+
         doc.fontSize(25)
-           .text('Your Report is Ready!', 100, 100);
-        
+            .text('Your Report is Ready!', 100, 100);
+
         doc.fontSize(12)
-           .text(`Generated at: ${new Date().toISOString()}`, 100, 150);
-        
+            .text(`Generated at: ${new Date().toISOString()}`, 100, 150);
+
         doc.fontSize(10)
-           .text(`User: ${req.user.access_code}`, 100, 180);
-        
+            .text(`User: ${req.user.access_code}`, 100, 180);
+
         doc.end();
     } catch (error) {
         console.error('Test PDF Error:', error);

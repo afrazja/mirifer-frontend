@@ -36,8 +36,11 @@ function generateMiriferReport(entries, userInfo) {
         }
     });
 
-    // Add footer to all pages
-    addFooters(doc);
+    // Add Final Thoughts section if provided
+    if (userInfo.finalThoughts) {
+        doc.addPage();
+        generateFinalThoughtsPage(doc, userInfo.finalThoughts);
+    }
 
     doc.end();
     return doc;
@@ -148,3 +151,20 @@ function addFooters(doc) {
 }
 
 module.exports = { generateMiriferReport };
+
+function generateFinalThoughtsPage(doc, finalThoughts) {
+    doc.fontSize(24)
+       .font('Helvetica-Bold')
+       .fillColor('#1a1a1a')
+       .text('Final Thoughts', { align: 'center' });
+    
+    doc.moveDown(2);
+    
+    doc.fontSize(11)
+       .font('Helvetica')
+       .fillColor('#333333')
+       .text(finalThoughts, {
+           align: 'left',
+           lineGap: 6
+       });
+}

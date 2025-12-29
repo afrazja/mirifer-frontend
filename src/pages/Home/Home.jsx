@@ -7,6 +7,7 @@ import Divider from '../../components/Divider/Divider';
 import Journey from '../../components/Journey/Journey';
 import OnboardingModal from '../../components/OnboardingModal/OnboardingModal';
 import ProgressBar from '../../components/ProgressBar/ProgressBar';
+import ProgressHeatMap from '../../components/ProgressHeatMap/ProgressHeatMap';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
 import './Home.css';
@@ -18,6 +19,7 @@ const Home = () => {
     const [journeyComplete, setJourneyComplete] = React.useState(false);
     const [showOnboarding, setShowOnboarding] = React.useState(false);
     const [completedDaysCount, setCompletedDaysCount] = React.useState(0);
+    const [completedDaysArray, setCompletedDaysArray] = React.useState([]);
 
     // Format current date as "4 July 2025"
     const getCurrentDate = () => {
@@ -52,6 +54,7 @@ const Home = () => {
                 // Show survey if user has completed at least 1 day (for testing)
                 setJourneyComplete(progressData.completedDays && progressData.completedDays.length > 0);
                 setCompletedDaysCount(progressData.completedDays ? progressData.completedDays.length : 0);
+                setCompletedDaysArray(progressData.completedDays || []);
             } catch (err) {
                 console.error('Failed to check status:', err);
                 setSurveyStatus({ submitted: false, loading: false });
@@ -129,6 +132,8 @@ const Home = () => {
             </section>
 
             <ProgressBar completedDays={completedDaysCount} totalDays={14} />
+
+            <ProgressHeatMap completedDays={completedDaysArray} />
 
             <Journey />
 
