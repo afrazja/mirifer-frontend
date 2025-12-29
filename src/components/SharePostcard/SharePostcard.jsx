@@ -102,12 +102,6 @@ function SharePostcard({ day, aiText }) {
                         <NotionButton onClick={downloadPostcard} type="secondary">
                             💾 Download
                         </NotionButton>
-                        <NotionButton
-                            onClick={() => setPostcardUrl(null)}
-                            type="secondary"
-                        >
-                            ✏️ Regenerate
-                        </NotionButton>
                     </div>
                 </div>
             )}

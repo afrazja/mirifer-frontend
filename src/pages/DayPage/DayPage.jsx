@@ -17,11 +17,21 @@ const DayPage = () => {
     const dayId = parseInt(id);
     const dayData = MIRIFER_DAYS.find(d => d.day === dayId);
 
-    const [reflection, setReflection] = useState('');
+    // Question 1 state
+    const [reflection1, setReflection1] = useState('');
+    const [llmResponse1, setLlmResponse1] = useState('');
+    const [isCompleted1, setIsCompleted1] = useState(false);
 
-    const [isCompleted, setIsCompleted] = useState(false);
-    const [llmResponse, setLlmResponse] = useState('');
+    // Question 2 state
+    const [question2, setQuestion2] = useState('');
+    const [reflection2, setReflection2] = useState('');
+    const [llmResponse2, setLlmResponse2] = useState('');
+    const [isCompleted2, setIsCompleted2] = useState(false);
+    const [noFollowupNeeded, setNoFollowupNeeded] = useState(false);
+
+    // Loading states
     const [isLoading, setIsLoading] = useState(false);
+    const [generatingQuestion, setGeneratingQuestion] = useState(false);
     const [error, setError] = useState('');
     const [generationCount, setGenerationCount] = useState(0);
 
