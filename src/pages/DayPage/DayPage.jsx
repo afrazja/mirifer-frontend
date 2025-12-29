@@ -17,12 +17,11 @@ const DayPage = () => {
     const dayId = parseInt(id);
     const dayData = MIRIFER_DAYS.find(d => d.day === dayId);
 
-    // Question 1 state
-    const [reflection1, setReflection1] = useState('');
-    const [llmResponse1, setLlmResponse1] = useState('');
-    const [isCompleted1, setIsCompleted1] = useState(false);
+    const [reflection, setReflection] = useState('');
+    const [llmResponse, setLlmResponse] = useState('');
+    const [isCompleted, setIsCompleted] = useState(false);
 
-    // Question 2 state
+    // Question 2 state (kept but not yet causing issues)
     const [question2, setQuestion2] = useState('');
     const [reflection2, setReflection2] = useState('');
     const [llmResponse2, setLlmResponse2] = useState('');
