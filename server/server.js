@@ -7,6 +7,7 @@ const { supabaseAdmin } = require('./supabaseAdmin');
 const { requireUser } = require('./authMiddleware');
 const { requireAdmin } = require('./adminMiddleware');
 const { generateMiriferReport } = require('./pdfGenerator');
+const { generateInsightPostcard } = require('./postcardGenerator');
 const { sendSurveyNotification } = require('./emailService');
 
 const app = express();
@@ -707,6 +708,30 @@ app.get('/api/admin/metrics', requireAdmin, async (req, res) => {
     }
 });
 
+
+// Generate insight postcard (shareable PNG)
+app.post('/api/mirifer/generate-postcard', requireUser, async (req, res) => {
+    try {
+        const { day, quote } = req.body;
+        
+        if (!day || !quote) {
+            return res.status(400).json({ error: 'Missing day or quote' });
+        }
+        
+        // Limit quote length
+        const truncatedQuote = quote.length > 200 ? quote.substring(0, 197) + '...' : quote;
+        
+        // Generate postcard
+        const imageBuffer = generateInsightPostcard(truncatedQuote, day);
+        
+        res.setHeader('Content-Type', 'image/png');
+        res.setHeader('Content-Disposition', `attachment; filename="mirifer-day${day}-insight.png"`);
+        res.send(imageBuffer);
+    } catch (error) {
+        console.error('Postcard generation error:', error);
+        res.status(500).json({ error: 'Failed to generate postcard' });
+    }
+});
 app.listen(PORT, () => {
     console.log(`Mirifer Backend running on http://localhost:${PORT}`);
 });

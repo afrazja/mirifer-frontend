@@ -5,6 +5,7 @@ import Callout from '../../components/Callout/Callout';
 import Divider from '../../components/Divider/Divider';
 import NotionButton from '../../components/NotionButton/NotionButton';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
+import SharePostcard from '../../components/SharePostcard/SharePostcard';
 
 import { useAuth } from '../../context/AuthContext';
 import './DayPage.css';
@@ -231,6 +232,9 @@ const DayPage = () => {
                                 </NotionButton>
                             </div>
                         )}
+
+                        {/* Share Postcard */}
+                        <SharePostcard day={dayId} aiText={llmResponse} />
                     </div>
                 ) : (
                     <div className="reflection-placeholder" style={{ textAlign: 'center', padding: '1rem 0' }}>
